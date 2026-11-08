@@ -179,7 +179,7 @@ def main():
         if len(content.splitlines()) >= 100:
             fail(path.relative_to(ROOT), "Skill must stay below 100 lines")
 
-    for file, limit in (("core/universal-core.md", 2500), ("core/task-router.md", 3500)):
+    for file, limit in (("core/universal-core.md", 1200), ("core/task-router.md", 3500)):
         if len(documents.get(ROOT / file, "")) > limit:
             fail(file, f"core context budget exceeded: {limit} characters")
     router = documents.get(ROOT / "core/task-router.md", "")
@@ -191,9 +191,11 @@ def main():
             if f".agent-os/core/{core}.md" not in documents.get(ROOT / entry, ""):
                 fail(entry, f"missing host-root entry to {core}")
     readme = documents.get(ROOT / "README.md", "")
-    for topic in ("怎么用", "直接复制", "给它任务的例子", "需要更细的方法时再看"):
+    for topic in ("给 Agent", "通用规则", "按需补充"):
         if topic not in readme:
             fail("README.md", f"missing simple entry topic: {topic}")
+    if len(readme) > 1800:
+        fail("README.md", "link-first entry exceeds 1800-character budget")
     prompt = documents.get(ROOT / "core/universal-core.md", "")
     embedded = re.search(
         r"<!-- universal-prompt:start -->\n```text\n(.*?)\n```\n<!-- universal-prompt:end -->",

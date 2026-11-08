@@ -1,16 +1,16 @@
-# Codex ����
+# Codex 接入
 
-��˵���� 2026-11-08 ���ĵ� [�ٷ� AGENTS.md �ĵ�](https://learn.chatgpt.com/docs/agent-configuration/agents-md) �� [�ٷ� Skills �ĵ�](https://learn.chatgpt.com/docs/build-skills) Ϊ���ݣ������������ Codex �汾�����б�֤��
+本说明以 2026-11-08 查阅的 [官方 AGENTS.md 文档](https://learn.chatgpt.com/docs/agent-configuration/agents-md) 和 [官方 Skills 文档](https://learn.chatgpt.com/docs/build-skills) 为依据；不是针对所有 Codex 版本的运行保证。
 
-## ���벽��
+## 接入步骤
 
-1. �� [����˵��](../README.md) �������ֿ�̶��汾�ŵ���Ŀ `.agent-os/`��
-2. ��ȡ��Ŀ����������Ŀ¼����ָ��� [���Ƭ��](AGENTS.md) �ֹ��ϲ���ʵ����Ч�� `AGENTS.md`�������û�ԭ�����ݡ�����ǰ�� override ����ָ���ļ������Ⱥ�ʵ���ȼ���
-3. �»Ựȷ�� Agent ʵ�ʶ�ȡ `.agent-os/core/universal-core.md`��`.agent-os/core/task-router.md` ����Ŀ�淶����ͨ Markdown ���Ӳ����Զ��������ġ�
-4. ����ԭ�����֣��ɽ����� Skill Ŀ¼�ŵ���Ŀ `.agents/skills/` ���û� `~/.agents/skills/`�����ַ�Χ��ͬ����ͻ�����ط�ʽ����װ�汾�˶ԡ�����Ϊ���ֹ�·��ͬʱ����һ�ݡ�
+1. 按 [公共说明](../README.md) 将完整仓库固定版本放到项目 `.agent-os/`。
+2. 读取项目根及适用子目录已有指令，把 [入口片段](AGENTS.md) 手工合并到实际生效的 `AGENTS.md`，保留用户原有内容。若当前有 override 或定制指令文件名，先核实优先级。
+3. 新会话确认 Agent 实际读取 `.agent-os/core/universal-core.md`、`.agent-os/core/task-router.md` 和项目规范。普通 Markdown 链接不会自动加载正文。
+4. 如需原生发现，可将完整 Skill 目录放到项目 `.agents/skills/` 或用户 `~/.agents/skills/`；发现范围、同名冲突和重载方式按安装版本核对。无需为了手工路由同时复制一份。
 
-����ȫ��ָ��ͨ��λ�� `~/.codex/AGENTS.md`���Զ��� `CODEX_HOME` ��ı�λ�á���һ���Ƽ���Ŀ���ã���֤�����ֹ��ϲ�����ȫ����ڣ�ȫ�������ʹ���ȶ�����Դ·���������հ���Ŀ���·����
+个人全局指令通常位于 `~/.codex/AGENTS.md`，自定义 `CODEX_HOME` 会改变位置。第一版推荐项目试用，验证后再手工合并精简全局入口；全局入口须使用稳定绝对源路径，不能照搬项目相对路径。
 
-## ����
+## 验收
 
-ѯ�ʡ�ʵ�ʶ�ȡ����Щ Agent OS �ļ���Դ�汾��ʲô������ִ�б����޸��븴������滮�������˶� T0 �����ȼ��ء�T2 �����ȡ����¼�����汾�����棨CLI/IDE/����/�ƣ���Ŀ¼��֤�ݡ��˲ֿ���δ�����Щ�����ԭ����װ���ԡ�
+询问“实际读取了哪些 Agent OS 文件、源版本是什么”，再执行标题修改与复杂任务规划样例，核对 T0 不过度加载、T2 按需读取。记录本机版本、表面（CLI/IDE/桌面/云）、目录和证据。此仓库尚未完成这些表面的原生安装测试。

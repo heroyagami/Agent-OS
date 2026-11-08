@@ -103,6 +103,8 @@ def main():
         visible = list(visible_lines(content))
         if content.startswith("\ufeff"):
             fail(name, "unexpected UTF-8 BOM")
+        if "\ufffd" in content:
+            fail(name, "Unicode replacement character: possible encoding damage")
         if not content.endswith("\n"):
             fail(name, "missing final newline")
         if any(line.rstrip() != line for line in lines):
@@ -171,7 +173,7 @@ def main():
         if name != skill or name in names or len(name) > 64:
             fail(path.relative_to(ROOT), "name must be unique and match directory")
         names.add(name)
-        if len(description) > 1024 or "����" not in description:
+        if len(description) > 1024 or "用于" not in description:
             fail(path.relative_to(ROOT), "description needs concrete trigger, max 1024 characters")
         if len(content.splitlines()) >= 100:
             fail(path.relative_to(ROOT), "Skill must stay below 100 lines")
@@ -188,7 +190,7 @@ def main():
             if f".agent-os/core/{core}.md" not in documents.get(ROOT / entry, ""):
                 fail(entry, f"missing host-root entry to {core}")
     readme = documents.get(ROOT / "README.md", "")
-    for topic in ("�Ĳ�ܹ�", "Ŀ¼�ṹ", "����ʽ����", "���ٿ�ʼ", "ʹ������", "��չ��ά��", "�汾·��", "��ǰ����"):
+    for topic in ("四层架构", "目录结构", "渐进式加载", "快速开始", "使用流程", "扩展与维护", "版本路线", "当前限制"):
         if topic not in readme:
             fail("README.md", f"missing entry topic: {topic}")
 

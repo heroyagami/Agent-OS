@@ -2,11 +2,13 @@
 
 依据 2026-11-08 查阅的 [官方 Skills 文档](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) 与 [官方 Context Files 文档](https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files)。目录、信任机制和配置字段必须按实际 Hermes 版本/实例核对。
 
+日常可直接复制 [首页提示词](../../README.md)，跳过下列文件设置。
+
 ## 推荐：项目入口
 
 1. 按 [公共说明](../README.md) 将完整 Agent OS 固定到项目 `.agent-os/`。
 2. 检查当前生效的项目上下文文件（如 `.hermes.md`/`HERMES.md`、`AGENTS.md`）。将 [入口片段](AGENTS.md) 合并到实际生效文件，而不是盲新建一个更高优先级文件，导致旧规则未加载。
-3. 片段要求显式读取 Core/Router；Markdown 链接不是自动导入。启动后核实当前工作目录、源目录和读取结果。
+3. 片段默认只显式读取 Core；明确启用进阶模式后才读取 Router。Markdown 链接不是自动导入，启动后核实当前工作目录、源目录和读取结果。
 4. 需要原生发现时，按当前文档选择项目 `.hermes/skills/` 或 `.agents/skills/`；完整复制所需 Skill，保留 references。项目 Skills 可能需要显式信任，先审阅内容再使用当前版本提供的信任流程。
 
 ## 可选：共享目录与身份入口

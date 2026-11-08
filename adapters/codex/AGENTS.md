@@ -2,7 +2,9 @@
 
 此片段合并到宿主项目根指令后生效；源仓库固定在项目 `.agent-os/`，路径从宿主项目根解析。
 
-启动任务时，实际读取 `.agent-os/core/universal-core.md` 与 `.agent-os/core/task-router.md`；再按路由打开相关 Skill 和当前阶段的 reference，勿预读全部库。
+启动任务时，只实际读取 `.agent-os/core/universal-core.md`，作为完整通用提示词。日常任务直接依其执行，不默认读取路由器、Skills 或模板。
+
+仅当用户明确启用进阶模式时，再打开 `.agent-os/core/task-router.md`，按需读取相关 Skill 和当前阶段的 reference，勿预读全部库。
 
 先读取本项目已有规范；Agent OS 仅补充通用方法，按宿主真实指令优先级处理冲突，不扩大任务范围或权限。源路径不可读时明确报告，不假装已加载。
 

@@ -30,7 +30,8 @@ REQUIRED = (
     "adapters/claude/README.md", "adapters/claude/CLAUDE.md",
     "adapters/hermes/README.md", "adapters/hermes/AGENTS.md",
     "adapters/hermes/SOUL.md", "docs/compatibility.md",
-    "docs/acceptance-scenarios.md", "scripts/check_docs.py",
+    "docs/acceptance-scenarios.md", "docs/advanced-guide.md",
+    "docs/original-prompt.md", "scripts/check_docs.py",
 )
 
 
@@ -190,9 +191,26 @@ def main():
             if f".agent-os/core/{core}.md" not in documents.get(ROOT / entry, ""):
                 fail(entry, f"missing host-root entry to {core}")
     readme = documents.get(ROOT / "README.md", "")
-    for topic in ("四层架构", "目录结构", "渐进式加载", "快速开始", "使用流程", "扩展与维护", "版本路线", "当前限制"):
+    for topic in ("怎么用", "直接复制", "给它任务的例子", "需要更细的方法时再看"):
         if topic not in readme:
-            fail("README.md", f"missing entry topic: {topic}")
+            fail("README.md", f"missing simple entry topic: {topic}")
+    prompt = documents.get(ROOT / "core/universal-core.md", "")
+    embedded = re.search(
+        r"<!-- universal-prompt:start -->\n```text\n(.*?)\n```\n<!-- universal-prompt:end -->",
+        readme, re.DOTALL,
+    )
+    if not embedded or embedded.group(1) != prompt.rstrip("\n"):
+        fail("README.md", "copyable prompt must exactly match standalone Core")
+    if re.search(r"\[[^\]]*\]\([^)]+\)", prompt):
+        fail("core/universal-core.md", "default prompt must not require linked files")
+    claude_entry = documents.get(ROOT / "adapters/claude/CLAUDE.md", "")
+    imports = re.findall(r"^@(.+)$", claude_entry, re.MULTILINE)
+    if imports != [".agent-os/core/universal-core.md"]:
+        fail("adapters/claude/CLAUDE.md", "default import must load only standalone Core")
+    advanced = documents.get(ROOT / "docs/advanced-guide.md", "")
+    for topic in ("四层架构", "目录结构", "渐进式加载", "快速开始", "使用流程", "扩展与维护", "版本路线", "当前限制"):
+        if topic not in advanced:
+            fail("docs/advanced-guide.md", f"missing preserved topic: {topic}")
 
     if findings:
         print("FAIL\n" + "\n".join(findings))

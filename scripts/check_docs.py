@@ -30,7 +30,7 @@ REQUIRED = (
     "adapters/claude/README.md", "adapters/claude/CLAUDE.md",
     "adapters/hermes/README.md", "adapters/hermes/AGENTS.md",
     "adapters/hermes/SOUL.md", "docs/compatibility.md",
-    "docs/acceptance-scenarios.md", "docs/advanced-guide.md",
+    "docs/acceptance-scenarios.md", "docs/document-delivery-preferences.md", "docs/advanced-guide.md",
     "docs/original-prompt.md", "scripts/check_docs.py",
 )
 
@@ -196,6 +196,10 @@ def main():
             fail("README.md", f"missing simple entry topic: {topic}")
     if len(readme) > 1800:
         fail("README.md", "link-first entry exceeds 1800-character budget")
+    for entry, target in (("README.md", "docs/document-delivery-preferences.md"),
+                          ("core/task-router.md", "../docs/document-delivery-preferences.md")):
+        if target not in documents.get(ROOT / entry, ""):
+            fail(entry, "missing route to document delivery preferences")
     prompt = documents.get(ROOT / "core/universal-core.md", "")
     embedded = re.search(
         r"<!-- universal-prompt:start -->\n```text\n(.*?)\n```\n<!-- universal-prompt:end -->",

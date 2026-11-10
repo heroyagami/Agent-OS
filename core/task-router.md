@@ -15,6 +15,7 @@ T3 的正式独立审查由另一位获授权的人员/审查者承担；工具�
 
 | 信号 | 读取 | 升级/组合条件 |
 | --- | --- | --- |
+| 投标、询价、报价响应、成套打印或邮寄 | [文档交付偏好](../docs/document-delivery-preferences.md) | 按本次指定格式及分封要求交付；多附件或多版本时加编排 |
 | 跨阶段协调、复杂交付或 T2/T3 | [task-orchestrator](../skills/task-orchestrator/SKILL.md) | 只加载当前阶段需要的 reference |
 | 封面、海报、UI、信息图、品牌视觉 | [visual-design](../skills/visual-design/SKILL.md) | 多规格或多素材依赖时加编排 |
 | 脚本、分镜、剪辑、声音、字幕、导出 | [video-production](../skills/video-production/SKILL.md) | 视觉阶段再读 visual-design，勿启动即读全部 |

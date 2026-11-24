@@ -1,6 +1,6 @@
 # AI员工注册中心
 
-注册中心是 Agent OS 员工身份、岗位边界和生命周期状态的唯一索引。它管理配置声明，不是 Agent 运行时。
+注册中心是 Agent OS 员工身份、岗位边界和生命周期状态的唯一索引。它管理配置声明，不是 Agent 运行时。宿主适配器另见 [Runtime Adapter](../runtime/README.md)，不能把宿主登记等同于员工已部署。
 
 ## 目录
 
@@ -9,6 +9,7 @@
 - [Registry Schema](schema/registry.schema.json)：注册索引格式。
 - [Task Schema](schema/task.schema.json)：派单任务元数据契约。
 - [Voice Command Schema](schema/voice-command.schema.json)：语音命令的脱敏元数据契约。
+- [Runtime Adapter Registry](../runtime/registry.json)：宿主适配器目录；与员工岗位注册分离。
 - [AI派单员岗位卡](agents/agent-dispatcher.json)：首个派单岗位草案。
 - [派单工作流](../workflows/agent-dispatch.md)：状态、资格、权限、预算与升级规则。
 - [AI架构师岗位卡](agents/ai-architect.json)：首个架构师岗位定义，目前仅为草案。

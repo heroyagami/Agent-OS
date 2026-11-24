@@ -28,3 +28,6 @@
 更新前比较源 commit、已安装版本、用户改动和官方文档；审查差异，运行 [文档检查](../scripts/check_docs.py) 与 [接入验收](../docs/acceptance-scenarios.md)，再切换固定版本。不要让自主经验更新直接改写共享源目录；必要时用文件权限限制写入。
 
 撤销只移除本次加入的入口片段和已确认属于本项目的安装副本/链接；先核对路径、差异与未提交内容。恢复到先前 commit，不整体覆盖 AGENTS.md、CLAUDE.md、SOUL.md 或全局配置。
+
+
+本目录的 adapters/ 只负责指令文件接入（在哪里发现指令、如何定位源文件、如何确认读取）；它与执行层 runtime/ 不同。跨宿主执行接口、任务事件与宿主进程连接见 [Runtime Adapter](../runtime/README.md)。能读取提示词不代表已经能启动 Agent。

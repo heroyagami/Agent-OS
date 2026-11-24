@@ -4,7 +4,7 @@
 
 一套供智能体复用的任务执行与质量控制方法：用精简核心保持行动一致，按需加载专业方法，围绕实际产物验收，减少遗漏和返工。
 
-**当前版本：v0.7.0。** 面向 Codex、Claude Code、Hermes 提供薄适配方案；尚未完成三种宿主的版本化安装与端到端验证。它是一套可读取的规则与工作流，不是新的 Agent 运行时，也不附带工具能力或权限。
+**当前版本：v0.8.0。** 在规则与工作流之外，新增宿主无关的 Runtime Core 和 Hermes、Codex App Server、Claude Agent SDK 三种 Adapter 原型。它们尚未连接真实宿主；不能把代码存在、mock 测试通过或 Adapter manifest 登记视为运行时已部署。
 
 ## 从哪里开始
 
@@ -35,7 +35,7 @@ L2 用 Skill 格式承载工作流，是复用包装方式，不是新增第五�
 
 ## AI员工体系（横切治理，不是第五层）
 
-七条 AI 员工原则作为横切治理层，覆盖现有 Core、Workflow、Skills 与 Project，不另造一套 Agent 运行时。它规定岗位契约、架构师设计流程、Agent 与 Skill 的边界、最小权限、经验晋升、结构化交接和自然语言/语音入口。
+七条 AI 员工原则作为横切治理层，覆盖现有 Core、Workflow、Skills 与 Project。它规定岗位契约、架构师设计流程、Agent 与 Skill 的边界、最小权限、经验晋升、结构化交接和自然语言/语音入口；跨宿主执行由独立 Runtime Adapter 层承接。
 
 - 设计规范：[AI员工操作模型](agent-workforce-model.md)
 - 员工岗位：[角色模板](../templates/agent-role.md)
@@ -49,12 +49,24 @@ L2 用 Skill 格式承载工作流，是复用包装方式，不是新增第五�
 - 任务契约：[task.schema.json](../registry/schema/task.schema.json)；实际任务记录仅存于受控私有队列。
 - 经验学习中心：[experience-curator Skill](../skills/experience-curator/SKILL.md)、[晋升工作流](../workflows/experience-promotion.md) 与 [提案 Schema](../registry/schema/experience-proposal.schema.json)。
 - 语音指挥中心：[voice-command-router Skill](../skills/voice-command-router/SKILL.md)、[voice-command 工作流](../workflows/voice-command.md) 与 [命令 Schema](../registry/schema/voice-command.schema.json)。
+- 运行时适配中心：[Runtime Adapter](../runtime/README.md)，统一任务、能力、事件与宿主协议；未部署的宿主不得接收正式任务。
 
-这是设计与治理规范，不会自动创建 Agent、账号、子进程、语音接口、持久记忆、工具权限或跨应用自动化。落地前必须核验宿主能力并进行隔离测试。
+这是设计与治理规范；Runtime Adapter 目前只有原型代码，不会自动创建已运行员工、持久任务队列、语音接口、记忆服务或跨应用权限。落地前必须核验宿主能力并进行隔离测试。
+
+## 运行时适配中心：Runtime Adapter 跨宿主执行层
+
+Runtime Adapter 是横切执行接入层，不是第五层业务方法，也不把 Hermes、Codex 或 Claude Code 固定为 Agent OS 的核心宿主。
+
+- **Runtime Core**：定义统一任务 Envelope、能力状态、运行事件、员工资格、权限子集和幂等闸门。
+- **Adapter**：负责协议映射。Hermes 使用 HTTP/SSE Runs API；Codex 使用 App Server JSON-RPC over stdio；Claude 使用 TypeScript Agent SDK query()。
+- **Host Runtime**：实际模型、工具和 Agent loop 仍由外部宿主执行。
+- **员工注册中心**：岗位生命周期与宿主适配器生命周期分开管理；Adapter 已实现不代表员工 approved/running。
+
+实现入口：[runtime/README.md](../runtime/README.md)。三个 Adapter 当前全部为 prototype / draft / not_deployed；无默认宿主、无员工绑定、无真实运行证据。Hermes 有原生 Idempotency-Key（凭据级保留 24 小时）；Codex/Claude 需要 Agent OS 持久化幂等账本，未接入前派单必须阻塞。宿主权限必须由真实沙箱、工具策略和审批服务执行，不能依赖提示词声明。
 
 ## 目录结构
 
-```text
+~~~text
 Agent-OS/
 ├── README.md
 ├── CHANGELOG.md
@@ -65,13 +77,10 @@ Agent-OS/
 │   ├── agent-architecture/SKILL.md
 │   ├── agent-dispatcher/SKILL.md
 │   ├── experience-curator/SKILL.md
-│   └── voice-command-router/SKILL.md
+│   ├── voice-command-router/SKILL.md
 │   ├── task-orchestrator/
 │   │   ├── SKILL.md
 │   │   └── references/
-│   │       ├── task-decomposition.md
-│   │       ├── adversarial-review.md
-│   │       └── quality-gates.md
 │   ├── visual-design/SKILL.md
 │   ├── video-production/SKILL.md
 │   ├── software-engineering/SKILL.md
@@ -85,18 +94,28 @@ Agent-OS/
 ├── registry/
 │   ├── README.md
 │   ├── registry.json
-│   ├── agents/ai-architect.json
-│   ├── agents/agent-dispatcher.json
+│   ├── agents/
 │   └── schema/
-│       ├── agent.schema.json
-│       ├── task.schema.json
-│       ├── experience-proposal.schema.json
-│       └── voice-command.schema.json
-│       └── registry.schema.json
-├── experience/
-│   └── README.md
-├── voice/
-│   └── README.md
+├── runtime/
+│   ├── README.md
+│   ├── package.json
+│   ├── registry.json
+│   ├── registry.schema.json
+│   ├── contracts/runtime-task.schema.json
+│   ├── src/
+│   │   ├── adapters/
+│   │   │   ├── hermes-http.mjs
+│   │   │   ├── codex-app-server.mjs
+│   │   │   └── claude-agent-sdk.mjs
+│   │   ├── transports/jsonl-process-transport.mjs
+│   │   ├── contracts.mjs
+│   │   ├── events.mjs
+│   │   ├── registry.mjs
+│   │   ├── dispatch.mjs
+│   │   └── index.mjs
+│   └── test/runtime.test.mjs
+├── experience/README.md
+├── voice/README.md
 ├── templates/
 │   ├── task-brief.md
 │   ├── execution-plan.md
@@ -110,9 +129,9 @@ Agent-OS/
 │   └── voice-command.md
 ├── adapters/
 │   ├── README.md
-│   ├── codex/              # README.md、AGENTS.md
-│   ├── claude/             # README.md、CLAUDE.md
-│   └── hermes/             # README.md、AGENTS.md、SOUL.md
+│   ├── codex/
+│   ├── claude/
+│   └── hermes/
 ├── docs/
 │   ├── compatibility.md
 │   ├── agent-workforce-model.md
@@ -123,10 +142,10 @@ Agent-OS/
 │   ├── check_docs.py
 │   ├── check_agent_registry.py
 │   ├── check_experience_proposals.py
-│   └── check_voice_commands.py
-└── .github/workflows/
-    └── agent-os-checks.yml
-```
+│   ├── check_voice_commands.py
+│   └── check_runtime_registry.py
+└── .github/workflows/agent-os-checks.yml
+~~~
 
 ## 渐进式加载（进阶模式）
 
@@ -209,6 +228,8 @@ python scripts/check_docs.py
 python scripts/check_agent_registry.py
 python scripts/check_experience_proposals.py
 python scripts/check_voice_commands.py
+python scripts/check_runtime_registry.py
+npm test --prefix runtime
 ```
 
 检查必要路径、相对链接及本仓库使用的标题锚点、Skill 基础元数据、精简篇幅、代码围栏、常见 Markdown 格式和入口路径。注册脚本检查 JSON 字段、引用、唯一 ID 与生命周期闸门；它不是完整 JSON Schema 验证器，也不证明 Agent 会遵从规则。
@@ -226,7 +247,8 @@ python scripts/check_voice_commands.py
 | v0.4.0 历史 | 新增 AI 架构师 Skill、团队设计工作流、JSON 员工注册中心和自动静态检查 | 岗位仅登记为 draft；运行时部署与宿主验证仍待完成 |
 | v0.5.0 历史 | 新增员工调度 Skill、派单状态工作流、任务 Schema 和只读派单员岗位草案 | 任务队列尚未接入；只完成派单规则与契约 |
 | v0.6.0 历史 | 新增经验学习 Skill、晋升工作流、提案 Schema 和隐私/正反例校验 | 不自动写入共享 Skill/Core；需维护者审查 |
-| v0.7.0 当前 | 新增语音指挥 Skill、命令 Schema、确认/授权工作流和隐私校验 | 仅完成协议；音频采集、STT 和宿主队列尚未接通 |
+| v0.7.0 历史 | 新增语音指挥 Skill、命令 Schema、确认/授权工作流和隐私校验 | 仅完成协议；音频采集、STT 和宿主队列尚未接通 |
+| v0.8.0 当前 | 新增 Runtime Core、统一任务/事件契约、Hermes/Codex/Claude 三种 Adapter 原型和 Node.js mock 测试 | 真实宿主仍为 draft/not_deployed；无默认宿主、员工绑定和持久幂等账本 |
 | 后续计划 | 按实际需求验证员工注册、宿主适配和代表任务运行 | 有版本化证据和实际需求，避免继续堆叠流程 |
 | v1.0 目标 | 稳定规范、升级/回滚约定、经验证的适配范围 | 核心接口稳定且有跨任务、跨宿主的持续证据 |
 
@@ -234,8 +256,8 @@ python scripts/check_voice_commands.py
 
 ## 当前限制
 
-- 未完成 Codex / Claude Code / Hermes 的版本化原生安装与端到端测试；目录与配置需按实际版本重新核实。
-- 未自带工具、模型、搜索/媒体引擎、执行器、记忆数据库或强制权限控制；没有工具就不能凭规则生成成品。
+- Runtime Adapter 目前只通过 mock transport/fetch/SDK 测试；未连接真实 Codex App Server、Claude Agent SDK 或 Hermes API Server，三者均保持 draft/not_deployed。
+- Runtime Adapter 不自带模型、搜索/媒体引擎、持久任务队列、生产幂等账本、记忆数据库或强制权限隔离；没有宿主与工具就不能凭规则生成成品。
 - 静态检查与自审不能证明执行质量、独立审查或安全隔离；重要任务仍需实际产物验证与适当人工/独立复核。
 - 不能保证减少返工或节省成本；需收集真实任务样本后评估。法律、医疗、财务等基础研究方法不替代专业审查。
 - 第一版不自动改写用户的其他项目、个人全局指令或共享 Skills；安装与后续经验更新须经过可审查的合并流程。

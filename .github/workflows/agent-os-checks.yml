@@ -16,6 +16,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Set up Node.js for Runtime Adapter tests
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test Runtime Adapter contracts and host mappings
+        run: npm test --prefix runtime
+      - name: Check Runtime Adapter registry and deployment gates
+        run: python3 scripts/check_runtime_registry.py
       - name: Check Markdown, links, Skills and adapters
         run: python3 scripts/check_docs.py
       - name: Check employee registry and lifecycle

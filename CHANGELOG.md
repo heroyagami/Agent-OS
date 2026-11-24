@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.8.0 — 2026-11-24
+
+- 新增宿主无关的 Runtime Core：统一任务 Envelope、能力状态、运行事件、员工资格、权限子集和幂等闸门。
+- 新增 Hermes HTTP/SSE、Codex App Server JSON-RPC/stdio、Claude Agent SDK 三种 Adapter 原型及 JSONL 子进程传输。
+- 新增 Runtime Registry、Schema、任务 Envelope Schema、Node.js mock 测试与 Python 注册一致性检查。
+- GitHub Actions 增加 Node.js Runtime 测试和 Runtime Registry 检查；继续保持三个宿主 draft/not_deployed、无默认宿主和无员工绑定。
+- Codex/Claude 未提供本适配可用的原生任务幂等键，必须先接入持久化幂等账本；当前未部署真实宿主，mock 测试不代表端到端可用。
+
+
 ## v0.7.0 — 2026-11-24
 
 - 新增 voice-command-router Skill、语音指挥工作流、命令 Schema、模板和隐私校验器。

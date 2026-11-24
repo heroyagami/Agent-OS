@@ -1,0 +1,10 @@
+{
+  "name": "@agent-os/runtime-adapters",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Host-neutral runtime contracts and prototype adapters for Agent OS.",
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  }
+}

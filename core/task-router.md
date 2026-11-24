@@ -27,6 +27,7 @@ T3 的正式独立审查由另一位获授权的人员/审查者承担；工具�
 | 新任务分派、员工匹配、权限/预算核对、任务状态流转 | [agent-dispatcher](../skills/agent-dispatcher/SKILL.md) + [派单工作流](../workflows/agent-dispatch.md) | 只向 approved 且 runtime=running 的员工派单；无运行队列时只生成派单提案 |
 | 成功经验提炼、重复错误复盘、候选 Skill 晋升 | [experience-curator](../skills/experience-curator/SKILL.md) + [晋升工作流](../workflows/experience-promotion.md) | 先脱敏再验证；未经维护者批准不修改共享 Skill/Core |
 | 语音指令解析、对象确认、风险分级与语音派单 | [voice-command-router](../skills/voice-command-router/SKILL.md) + [语音指挥工作流](../workflows/voice-command.md) | 语音只作入口；高影响动作须会话认证、明确确认及原有审批 |
+| 跨宿主运行时适配、宿主能力探测、任务事件归一化 | [Runtime Adapter](../runtime/README.md) | 先做真实 capability probe；未部署宿主不得派单；非原生幂等宿主须先接入持久化幂等账本 |
 
 ## 进阶能力的触发
 

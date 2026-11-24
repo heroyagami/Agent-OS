@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0.0",
+  "contract_version": "1.0.0",
+  "updated_at": "2026-11-24",
+  "default_adapter_id": null,
+  "selection_policy": "capability_first",
+  "agent_bindings": [],
+  "adapters": [
+    {
+      "id": "hermes",
+      "name": "Hermes Agent",
+      "transport": "http_sse",
+      "lifecycle_status": "draft",
+      "runtime_status": "not_deployed",
+      "implementation_status": "prototype",
+      "entrypoint": "src/adapters/hermes-http.mjs",
+      "capabilities": {
+        "submit": "implemented",
+        "status": "implemented",
+        "events": "implemented",
+        "cancel": "implemented",
+        "approval": "implemented",
+        "resume": "host_dependent",
+        "idempotency": "native",
+        "permissions": "host_config_required",
+        "usage": "host_dependent",
+        "multi_agent": "host_dependent"
+      },
+      "official_docs": [
+        "https://hermes-agent.nousresearch.com/docs/developer-guide/programmatic-integration",
+        "https://hermes-agent.nousresearch.com/docs/user-guide/features/api-server"
+      ],
+      "runtime_evidence": []
+    },
+    {
+      "id": "codex-app-server",
+      "name": "OpenAI Codex App Server",
+      "transport": "jsonl_stdio",
+      "lifecycle_status": "draft",
+      "runtime_status": "not_deployed",
+      "implementation_status": "prototype",
+      "entrypoint": "src/adapters/codex-app-server.mjs",
+      "capabilities": {
+        "submit": "implemented",
+        "status": "local_only",
+        "events": "implemented",
+        "cancel": "implemented",
+        "approval": "implemented",
+        "resume": "implemented",
+        "idempotency": "external_ledger_required",
+        "permissions": "sandbox_policy",
+        "usage": "host_dependent",
+        "multi_agent": "host_dependent"
+      },
+      "official_docs": [
+        "https://github.com/openai/codex/tree/main/codex-rs/app-server"
+      ],
+      "runtime_evidence": []
+    },
+    {
+      "id": "claude-agent-sdk",
+      "name": "Anthropic Claude Agent SDK",
+      "transport": "sdk_process",
+      "lifecycle_status": "draft",
+      "runtime_status": "not_deployed",
+      "implementation_status": "prototype",
+      "entrypoint": "src/adapters/claude-agent-sdk.mjs",
+      "capabilities": {
+        "submit": "implemented",
+        "status": "local_only",
+        "events": "implemented",
+        "cancel": "force_close",
+        "approval": "callback",
+        "resume": "implemented",
+        "idempotency": "external_ledger_required",
+        "permissions": "callback",
+        "usage": "implemented",
+        "multi_agent": "host_dependent"
+      },
+      "official_docs": [
+        "https://code.claude.com/docs/en/agent-sdk/overview",
+        "https://code.claude.com/docs/en/agent-sdk/typescript"
+      ],
+      "runtime_evidence": []
+    }
+  ]
+}

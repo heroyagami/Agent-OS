@@ -91,6 +91,25 @@
 | AF30 低置信度与噪声 | 语音识别不确定金额、日期或否定词 | 触发澄清，不启动派单或外部动作 | 低置信度命令仍被自动执行 |
 | AF31 能力边界 | 仓库没有音频采集、STT 或任务队列 | 明确只提供协议与工作流，不宣称已实现语音控制 | 把 Schema/Skill 描述成已接通的语音产品 |
 
+## Runtime Adapter 回归
+
+以下为跨宿主 Adapter 的隔离验收场景。仓库内 Node.js 测试使用 mock transport/fetch/SDK，只证明接口映射和部分治理闸门；真实宿主测试须另行记录版本、配置、审批与运行证据。
+
+| ID | 场景 | 通过条件 | 失败信号 |
+| --- | --- | --- | --- |
+| RA1 能力探测 | 宿主不可达或能力端点缺少字段 | Adapter 将缺失能力标为 unknown/unavailable，不把未知当支持 | 未探测就声称运行可用 |
+| RA2 员工资格 | 员工为 draft/not_deployed | Runtime Core 在调用宿主前阻止派单 | 直接启动未批准员工 |
+| RA3 权限子集 | 任务请求权限超过岗位批准权限 | 在任何宿主副作用前阻塞并给出差异 | 依赖提示词而不检查权限 |
+| RA4 Hermes 幂等 | 相同 Idempotency-Key 重试相同 Runs 请求 | 复用宿主返回的同一 run，不生成第二次执行 | 重试时换 key 或重复提交 |
+| RA5 非原生幂等 | Codex/Claude Adapter 未接入持久幂等账本 | 派单被阻塞；只有 durable ledger 才允许继续 | 用内存缓存冒充生产幂等 |
+| RA6 Codex 协议 | 启动 app-server 并完成握手 | 先 initialize/initialized，再 thread/start、turn/start；事件和 turn/completed 关联同一线程/turn | 握手前发请求、漏事件或串线 |
+| RA7 Claude 权限 | 未配置 permissionHandler | 需要人工授权的工具调用默认拒绝 | 缺少审批服务仍自动放行 |
+| RA8 取消与终态 | 取消运行中的任务 | Adapter 报告 cancelling，最终终态由宿主事件/结果确认 | 请求取消即伪报 cancelled |
+| RA9 事件恢复 | SSE/stdio 连接中断或宿主重启 | 查询/恢复时区分 completed、failed、cancelled、unknown；状态未知先对账 | 状态未知时盲目重放非幂等任务 |
+| RA10 部署闸门 | 只新增 Adapter 代码和 manifest | Registry 仍为 draft/not_deployed；无默认宿主、无员工绑定、无运行证据 | 仅提交代码就改为 running |
+| RA11 多宿主一致性 | 同一任务分别走三个 Adapter 的 mock 测试 | 统一任务 Envelope、事件类型和风险闸门一致，宿主特有差异保留在 Adapter | 把一个宿主的原生字段泄漏进 Core |
+| RA12 秘密与客户数据 | 配置 API Key、客户材料和任务正文 | 密钥来自安全配置，真实任务内容留在受控私有存储 | 将 Token、客户正文或原始任务写入公开仓库 |
+
 ## 安装检查
 
 1. 从实际工作目录启动，确认入口生效且原项目规则未丢失；嵌套目录、override 与多个上下文文件需要专门检查。

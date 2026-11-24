@@ -13,7 +13,7 @@ from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = (
-    "task-orchestrator", "agent-architecture", "agent-dispatcher", "experience-curator", "visual-design", "video-production",
+    "task-orchestrator", "agent-architecture", "agent-dispatcher", "experience-curator", "voice-command-router", "visual-design", "video-production",
     "software-engineering", "deep-research", "modern-web-guidance",
 )
 REQUIRED = (
@@ -24,7 +24,7 @@ REQUIRED = (
     )),
     *(f"templates/{name}.md" for name in (
         "task-brief", "execution-plan", "review-report", "project-context",
-        "experience-proposal", "agent-role", "agent-team-design", "agent-handoff", "agent-task",
+        "experience-proposal", "agent-role", "agent-team-design", "agent-handoff", "agent-task", "voice-command",
     )),
     "adapters/README.md", "adapters/codex/README.md", "adapters/codex/AGENTS.md",
     "adapters/claude/README.md", "adapters/claude/CLAUDE.md",
@@ -32,13 +32,14 @@ REQUIRED = (
     "adapters/hermes/SOUL.md", "docs/compatibility.md",
     "docs/acceptance-scenarios.md", "docs/document-delivery-preferences.md",
     "docs/agent-workforce-model.md", "docs/advanced-guide.md",
-    "workflows/agent-team-design.md", "workflows/agent-dispatch.md", "workflows/experience-promotion.md", "registry/README.md",
+    "workflows/agent-team-design.md", "workflows/agent-dispatch.md", "workflows/experience-promotion.md", "workflows/voice-command.md", "registry/README.md",
     "registry/registry.json", "registry/schema/agent.schema.json",
     "registry/schema/registry.schema.json", "registry/schema/task.schema.json",
-    "registry/schema/experience-proposal.schema.json",
+    "registry/schema/experience-proposal.schema.json", "registry/schema/voice-command.schema.json",
     "registry/agents/ai-architect.json", "registry/agents/agent-dispatcher.json",
     "scripts/check_agent_registry.py", "scripts/check_experience_proposals.py",
-    "experience/README.md", ".github/workflows/agent-os-checks.yml",
+    "experience/README.md", "voice/README.md", "scripts/check_voice_commands.py",
+    ".github/workflows/agent-os-checks.yml",
     "docs/original-prompt.md", "scripts/check_docs.py",
 )
 
@@ -93,7 +94,7 @@ def main():
 
     # Limit checks to project documents, never traverse an embedded .git tree.
     paths = sorted({ROOT / "README.md", ROOT / "CHANGELOG.md"} | {
-        path for folder in ("core", "skills", "templates", "adapters", "docs", "workflows", "registry", "experience")
+        path for folder in ("core", "skills", "templates", "adapters", "docs", "workflows", "registry", "experience", "voice")
         for path in (ROOT / folder).rglob("*.md")
     })
     documents = {}
@@ -220,7 +221,12 @@ def main():
                           ("docs/agent-workforce-model.md", "../skills/experience-curator/SKILL.md"),
                           ("docs/agent-workforce-model.md", "../workflows/experience-promotion.md"),
                           ("docs/agent-workforce-model.md", "../registry/schema/experience-proposal.schema.json"),
-                          ("docs/agent-workforce-model.md", "../experience/README.md")):
+                          ("docs/agent-workforce-model.md", "../experience/README.md"),
+                          ("core/task-router.md", "../skills/voice-command-router/SKILL.md"),
+                          ("docs/agent-workforce-model.md", "../skills/voice-command-router/SKILL.md"),
+                          ("docs/agent-workforce-model.md", "../workflows/voice-command.md"),
+                          ("docs/agent-workforce-model.md", "../registry/schema/voice-command.schema.json"),
+                          ("docs/agent-workforce-model.md", "../voice/README.md")):
         if target not in documents.get(ROOT / entry, ""):
             fail(entry, f"missing required link: {target}")
     prompt = documents.get(ROOT / "core/universal-core.md", "")
@@ -237,7 +243,7 @@ def main():
     if imports != [".agent-os/core/universal-core.md"]:
         fail("adapters/claude/CLAUDE.md", "default import must load only standalone Core")
     advanced = documents.get(ROOT / "docs/advanced-guide.md", "")
-    for topic in ("四层架构", "AI员工体系", "员工注册中心", "员工调度中心", "经验学习中心", "目录结构", "渐进式加载", "快速开始", "使用流程", "扩展与维护", "版本路线", "当前限制"):
+    for topic in ("四层架构", "AI员工体系", "员工注册中心", "员工调度中心", "经验学习中心", "语音指挥中心", "目录结构", "渐进式加载", "快速开始", "使用流程", "扩展与维护", "版本路线", "当前限制"):
         if topic not in advanced:
             fail("docs/advanced-guide.md", f"missing preserved topic: {topic}")
 

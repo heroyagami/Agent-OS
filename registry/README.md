@@ -8,6 +8,7 @@
 - [Agent Schema](schema/agent.schema.json)：单个员工配置格式。
 - [Registry Schema](schema/registry.schema.json)：注册索引格式。
 - [Task Schema](schema/task.schema.json)：派单任务元数据契约。
+- [Voice Command Schema](schema/voice-command.schema.json)：语音命令的脱敏元数据契约。
 - [AI派单员岗位卡](agents/agent-dispatcher.json)：首个派单岗位草案。
 - [派单工作流](../workflows/agent-dispatch.md)：状态、资格、权限、预算与升级规则。
 - [AI架构师岗位卡](agents/ai-architect.json)：首个架构师岗位定义，目前仅为草案。

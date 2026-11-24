@@ -24,6 +24,7 @@ description: 编排复杂任务的拆解、依赖、风险验证、阶段审查�
 - **经验学习与技能晋升**：重要任务验收后，或重复错误已找到根因时，读 [experience-curator](../experience-curator/SKILL.md) 和 [经验晋升工作流](../../workflows/experience-promotion.md)。只提炼脱敏、可复现的方法；候选规则必须经过正反例测试和维护者审批。
 - **岗位化员工团队**：涉及长期岗位、AI设计AI、员工权限或跨Agent交接时，读 [AI员工操作模型](../../docs/agent-workforce-model.md)；需要设计/拆分岗位时再读 [agent-architecture](../agent-architecture/SKILL.md)，正式配置按 [注册中心](../../registry/README.md) 管理。岗位文档不等于运行时。
 - **任务分派与员工匹配**：需要从注册中心选择可执行员工、核对岗位状态/权限/预算或管理任务状态时，读 [agent-dispatcher](../agent-dispatcher/SKILL.md) 和 [派单工作流](../../workflows/agent-dispatch.md)。它不替代本 Skill 的复杂任务拆解，也不在没有运行队列时声称已派单。
+- **语音指挥入口**：当任务来自语音转写时，读 [voice-command-router](../voice-command-router/SKILL.md) 和 [语音指挥工作流](../../workflows/voice-command.md)。先确认对象、金额、日期和意图，再按既有派单/审批流程执行；语音身份不替代账户认证。
 
 ## 记录与范围
 

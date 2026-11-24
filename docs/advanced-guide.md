@@ -4,7 +4,7 @@
 
 一套供智能体复用的任务执行与质量控制方法：用精简核心保持行动一致，按需加载专业方法，围绕实际产物验收，减少遗漏和返工。
 
-**当前版本：v0.6.0。** 面向 Codex、Claude Code、Hermes 提供薄适配方案；尚未完成三种宿主的版本化安装与端到端验证。它是一套可读取的规则与工作流，不是新的 Agent 运行时，也不附带工具能力或权限。
+**当前版本：v0.7.0。** 面向 Codex、Claude Code、Hermes 提供薄适配方案；尚未完成三种宿主的版本化安装与端到端验证。它是一套可读取的规则与工作流，不是新的 Agent 运行时，也不附带工具能力或权限。
 
 ## 从哪里开始
 
@@ -26,7 +26,7 @@ Agent OS 将第一性原理、逆向规划、风险前置、依赖管理、最�
 | --- | --- | --- | --- |
 | L1 Core | 如何判断、行动与选择流程 | `core/universal-core.md`、`core/task-router.md` | 启用进阶模式后读取 Core 与 Router |
 | L2 Workflow | 复杂工作怎样拆解、执行、审查和验收 | `skills/task-orchestrator/`、`workflows/` 与 `templates/` | T2/T3 或确有编排需要；references 分阶段读取 |
-| L3 Skills | 领域内怎样制作与验证 | 视觉、视频、软件、研究、现代 Web，以及横切的 `agent-architecture`、`agent-dispatcher`、`experience-curator` | 路由命中领域制作、员工调度或经验沉淀需求时 |
+| L3 Skills | 领域内怎样制作与验证 | 视觉、视频、软件、研究、现代 Web，以及横切的 `agent-architecture`、`agent-dispatcher`、`experience-curator`、`voice-command-router` | 路由命中领域制作、员工调度、经验沉淀或语音入口时 |
 | L4 Project | 当前项目有哪些真实约束 | 宿主已有规范；缺失时可用项目上下文模板 | 先读取当前范围内项目规范 |
 
 L2 用 Skill 格式承载工作流，是复用包装方式，不是新增第五层。`adapters/` 是宿主接入层，负责入口与路径，不另维护一套方法。L4 的内容属于各宿主项目，本仓库只提供可选模板，不能替代用户已有规范。
@@ -48,6 +48,7 @@ L2 用 Skill 格式承载工作流，是复用包装方式，不是新增第五�
 - 员工调度中心：[agent-dispatcher Skill](../skills/agent-dispatcher/SKILL.md) 与 [agent-dispatch 工作流](../workflows/agent-dispatch.md)。
 - 任务契约：[task.schema.json](../registry/schema/task.schema.json)；实际任务记录仅存于受控私有队列。
 - 经验学习中心：[experience-curator Skill](../skills/experience-curator/SKILL.md)、[晋升工作流](../workflows/experience-promotion.md) 与 [提案 Schema](../registry/schema/experience-proposal.schema.json)。
+- 语音指挥中心：[voice-command-router Skill](../skills/voice-command-router/SKILL.md)、[voice-command 工作流](../workflows/voice-command.md) 与 [命令 Schema](../registry/schema/voice-command.schema.json)。
 
 这是设计与治理规范，不会自动创建 Agent、账号、子进程、语音接口、持久记忆、工具权限或跨应用自动化。落地前必须核验宿主能力并进行隔离测试。
 
@@ -64,6 +65,7 @@ Agent-OS/
 │   ├── agent-architecture/SKILL.md
 │   ├── agent-dispatcher/SKILL.md
 │   ├── experience-curator/SKILL.md
+│   └── voice-command-router/SKILL.md
 │   ├── task-orchestrator/
 │   │   ├── SKILL.md
 │   │   └── references/
@@ -78,7 +80,8 @@ Agent-OS/
 ├── workflows/
 │   ├── agent-team-design.md
 │   ├── agent-dispatch.md
-│   └── experience-promotion.md
+│   ├── experience-promotion.md
+│   └── voice-command.md
 ├── registry/
 │   ├── README.md
 │   ├── registry.json
@@ -87,9 +90,12 @@ Agent-OS/
 │   └── schema/
 │       ├── agent.schema.json
 │       ├── task.schema.json
-│       └── experience-proposal.schema.json
+│       ├── experience-proposal.schema.json
+│       └── voice-command.schema.json
 │       └── registry.schema.json
 ├── experience/
+│   └── README.md
+├── voice/
 │   └── README.md
 ├── templates/
 │   ├── task-brief.md
@@ -100,7 +106,8 @@ Agent-OS/
 │   ├── agent-role.md
 │   ├── agent-team-design.md
 │   ├── agent-handoff.md
-│   └── agent-task.md
+│   ├── agent-task.md
+│   └── voice-command.md
 ├── adapters/
 │   ├── README.md
 │   ├── codex/              # README.md、AGENTS.md
@@ -115,7 +122,8 @@ Agent-OS/
 ├── scripts/
 │   ├── check_docs.py
 │   ├── check_agent_registry.py
-│   └── check_experience_proposals.py
+│   ├── check_experience_proposals.py
+│   └── check_voice_commands.py
 └── .github/workflows/
     └── agent-os-checks.yml
 ```
@@ -200,6 +208,7 @@ Markdown 链接不是导入语法；路由器是决策规则，不是调度程�
 python scripts/check_docs.py
 python scripts/check_agent_registry.py
 python scripts/check_experience_proposals.py
+python scripts/check_voice_commands.py
 ```
 
 检查必要路径、相对链接及本仓库使用的标题锚点、Skill 基础元数据、精简篇幅、代码围栏、常见 Markdown 格式和入口路径。注册脚本检查 JSON 字段、引用、唯一 ID 与生命周期闸门；它不是完整 JSON Schema 验证器，也不证明 Agent 会遵从规则。
@@ -216,7 +225,8 @@ python scripts/check_experience_proposals.py
 | v0.3.0 历史 | 在既有四层架构上增加 AI 员工治理、岗位/团队/交接模板与验收场景 | 文档与路由已整合；各宿主运行能力仍待验证 |
 | v0.4.0 历史 | 新增 AI 架构师 Skill、团队设计工作流、JSON 员工注册中心和自动静态检查 | 岗位仅登记为 draft；运行时部署与宿主验证仍待完成 |
 | v0.5.0 历史 | 新增员工调度 Skill、派单状态工作流、任务 Schema 和只读派单员岗位草案 | 任务队列尚未接入；只完成派单规则与契约 |
-| v0.6.0 当前 | 新增经验学习 Skill、晋升工作流、提案 Schema 和隐私/正反例校验 | 不自动写入共享 Skill/Core；需维护者审查 |
+| v0.6.0 历史 | 新增经验学习 Skill、晋升工作流、提案 Schema 和隐私/正反例校验 | 不自动写入共享 Skill/Core；需维护者审查 |
+| v0.7.0 当前 | 新增语音指挥 Skill、命令 Schema、确认/授权工作流和隐私校验 | 仅完成协议；音频采集、STT 和宿主队列尚未接通 |
 | 后续计划 | 按实际需求验证员工注册、宿主适配和代表任务运行 | 有版本化证据和实际需求，避免继续堆叠流程 |
 | v1.0 目标 | 稳定规范、升级/回滚约定、经验证的适配范围 | 核心接口稳定且有跨任务、跨宿主的持续证据 |
 

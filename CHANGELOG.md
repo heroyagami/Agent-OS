@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.7.0 — 2026-11-24
+
+- 新增 voice-command-router Skill、语音指挥工作流、命令 Schema、模板和隐私校验器。
+- 定义语音转写、意图/实体识别、目标澄清、风险分级、会话认证、明确确认、权限核对和派单反馈流程。
+- 明确声纹或声音相似度不能替代账户认证；高影响动作仍需明确确认与原有审批。
+- 将语音入口接入 Task Router、Task Orchestrator、员工治理文档、注册 Schema、验收场景和 GitHub Actions。
+- 仅完成可校验的协议与流程；麦克风采集、STT 服务、实时队列及宿主端语音集成仍未部署。
+
+
 ## v0.6.0 — 2026-11-24
 
 - 新增 experience-curator Skill 与 experience-promotion 工作流，将已验收任务转为脱敏、可测试、待审查的候选经验。

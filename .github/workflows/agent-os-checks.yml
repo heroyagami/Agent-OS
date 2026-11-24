@@ -22,3 +22,5 @@ jobs:
         run: python3 scripts/check_agent_registry.py
       - name: Check experience proposal privacy and promotion gates
         run: python3 scripts/check_experience_proposals.py
+      - name: Check voice command privacy and confirmation gates
+        run: python3 scripts/check_voice_commands.py

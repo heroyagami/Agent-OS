@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent OS Voice Command Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "command_id",
+    "source",
+    "language",
+    "transcript_ref",
+    "intent",
+    "requested_action",
+    "target",
+    "entities",
+    "confidence",
+    "risk_tier",
+    "confirmation_required",
+    "confirmation_status",
+    "permission_check",
+    "auth_context",
+    "task_id",
+    "redaction_status",
+    "result_ref",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "command_id": {
+      "type": "string",
+      "pattern": "^vc-[a-z0-9][a-z0-9-]*$"
+    },
+    "source": {
+      "enum": [
+        "chatgpt_voice",
+        "mobile_voice",
+        "desktop_voice",
+        "external_stt"
+      ]
+    },
+    "language": {
+      "type": "string",
+      "minLength": 2
+    },
+    "transcript_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "intent": {
+      "enum": [
+        "create_task",
+        "query_status",
+        "cancel_task",
+        "request_review",
+        "request_publish",
+        "modify_resource",
+        "unknown"
+      ]
+    },
+    "requested_action": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resource_type",
+        "resource_ref",
+        "disambiguation_required"
+      ],
+      "properties": {
+        "resource_type": {
+          "type": "string"
+        },
+        "resource_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "disambiguation_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "value_ref",
+          "confidence"
+        ],
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "risk_tier": {
+      "enum": [
+        "T0",
+        "T1",
+        "T2",
+        "T3"
+      ]
+    },
+    "confirmation_required": {
+      "type": "boolean"
+    },
+    "confirmation_status": {
+      "enum": [
+        "not_required",
+        "pending",
+        "confirmed",
+        "rejected"
+      ]
+    },
+    "permission_check": {
+      "enum": [
+        "not_checked",
+        "passed",
+        "blocked",
+        "pending"
+      ]
+    },
+    "auth_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "session_authenticated",
+        "voice_biometrics_used"
+      ],
+      "properties": {
+        "session_authenticated": {
+          "type": "boolean"
+        },
+        "voice_biometrics_used": {
+          "const": false
+        }
+      }
+    },
+    "task_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "redaction_status": {
+      "enum": [
+        "not_required",
+        "pending",
+        "redacted",
+        "rejected"
+      ]
+    },
+    "result_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

@@ -4,13 +4,14 @@
 
 一套供智能体复用的任务执行与质量控制方法：用精简核心保持行动一致，按需加载专业方法，围绕实际产物验收，减少遗漏和返工。
 
-**当前版本：v0.2.4。** 面向 Codex、Claude Code、Hermes 提供薄适配方案；尚未完成三种宿主的版本化安装与端到端验证。它是一套可读取的规则与工作流，不是新的 Agent 运行时，也不附带工具能力或权限。
+**当前版本：v0.3.0。** 面向 Codex、Claude Code、Hermes 提供薄适配方案；尚未完成三种宿主的版本化安装与端到端验证。它是一套可读取的规则与工作流，不是新的 Agent 运行时，也不附带工具能力或权限。
 
 ## 从哪里开始
 
 - 想了解方法：先读 [Universal Core](../core/universal-core.md) 与 [Task Router](../core/task-router.md)。
 - 想接入项目：按下方“快速开始”及 [适配入口](../adapters/README.md) 操作。
 - 想执行复杂任务：读 [Task Orchestrator](../skills/task-orchestrator/SKILL.md)，到相应阶段再读 references。
+- 想设计长期 AI 员工、岗位权限与 Agent 交接：读 [AI员工操作模型](agent-workforce-model.md)，按需使用角色、团队和交接模板。
 - 想扩展或核验：查看下方扩展流程、[兼容性](compatibility.md)、[验收场景](acceptance-scenarios.md) 和 [进阶模式验收](agent-workflow-acceptance.md)。
 
 ## 目标与取舍
@@ -31,6 +32,18 @@ Agent OS 将第一性原理、逆向规划、风险前置、依赖管理、最�
 L2 用 Skill 格式承载工作流，是复用包装方式，不是新增第五层。`adapters/` 是宿主接入层，负责入口与路径，不另维护一套方法。L4 的内容属于各宿主项目，本仓库只提供可选模板，不能替代用户已有规范。
 
 四层是职责划分，不是覆盖平台系统指令的优先级。冲突按宿主真实指令层级和明确任务授权处理；项目方法不能扩张权限。
+
+## AI员工体系（横切治理，不是第五层）
+
+七条 AI 员工原则作为横切治理层，覆盖现有 Core、Workflow、Skills 与 Project，不另造一套 Agent 运行时。它规定岗位契约、架构师设计流程、Agent 与 Skill 的边界、最小权限、经验晋升、结构化交接和自然语言/语音入口。
+
+- 设计规范：[AI员工操作模型](agent-workforce-model.md)
+- 员工岗位：[角色模板](../templates/agent-role.md)
+- 团队设计：[团队方案模板](../templates/agent-team-design.md)
+- 任务交接：[交接模板](../templates/agent-handoff.md)
+- 经验晋升：沿用 [经验提案](../templates/experience-proposal.md)，先验证再经维护者审核。
+
+这是设计与治理规范，不会自动创建 Agent、账号、子进程、语音接口、持久记忆、工具权限或跨应用自动化。落地前必须核验宿主能力并进行隔离测试。
 
 ## 目录结构
 
@@ -58,7 +71,10 @@ Agent-OS/
 │   ├── execution-plan.md
 │   ├── review-report.md
 │   ├── project-context.md
-│   └── experience-proposal.md
+│   ├── experience-proposal.md
+│   ├── agent-role.md
+│   ├── agent-team-design.md
+│   └── agent-handoff.md
 ├── adapters/
 │   ├── README.md
 │   ├── codex/              # README.md、AGENTS.md
@@ -66,6 +82,7 @@ Agent-OS/
 │   └── hermes/             # README.md、AGENTS.md、SOUL.md
 ├── docs/
 │   ├── compatibility.md
+│   ├── agent-workforce-model.md
 │   ├── acceptance-scenarios.md
 │   ├── advanced-guide.md
 │   └── original-prompt.md
@@ -163,7 +180,8 @@ python scripts/check_docs.py
 | --- | --- | --- |
 | v0.1.0 历史 | 四层底座、五个 Skills、模板、薄适配、静态检查与验收场景 | 文档结构/引用/内容审查及远端写入核验；无三端兼容保证 |
 | v0.2.3 历史 | 轻量首页与五个 Skills；新增方案竞选、分工与纠错学习参考 | 进阶方法按需阅读；真实运行效果待验证 |
-| v0.2.4 当前 | 新增 Modern Web 专业 Skill 与按需路由；原有 Core 不变 | 外部 CLI 与宿主端到端行为仍需按环境验证 |
+| v0.2.4 历史 | 新增 Modern Web 专业 Skill 与按需路由；原有 Core 不变 | 外部 CLI 与宿主端到端行为仍需按环境验证 |
+| v0.3.0 当前 | 在既有四层架构上增加 AI 员工治理、岗位/团队/交接模板与验收场景 | 文档与路由已整合；各宿主运行能力仍待验证 |
 | 后续计划 | 先验证日常可用性，再按需补三端接入与代表任务回归 | 有版本化证据和实际需求，避免继续堆叠流程 |
 | v1.0 目标 | 稳定规范、升级/回滚约定、经验证的适配范围 | 核心接口稳定且有跨任务、跨宿主的持续证据 |
 

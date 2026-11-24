@@ -24,13 +24,14 @@ REQUIRED = (
     )),
     *(f"templates/{name}.md" for name in (
         "task-brief", "execution-plan", "review-report", "project-context",
-        "experience-proposal",
+        "experience-proposal", "agent-role", "agent-team-design", "agent-handoff",
     )),
     "adapters/README.md", "adapters/codex/README.md", "adapters/codex/AGENTS.md",
     "adapters/claude/README.md", "adapters/claude/CLAUDE.md",
     "adapters/hermes/README.md", "adapters/hermes/AGENTS.md",
     "adapters/hermes/SOUL.md", "docs/compatibility.md",
-    "docs/acceptance-scenarios.md", "docs/document-delivery-preferences.md", "docs/advanced-guide.md",
+    "docs/acceptance-scenarios.md", "docs/document-delivery-preferences.md",
+    "docs/agent-workforce-model.md", "docs/advanced-guide.md",
     "docs/original-prompt.md", "scripts/check_docs.py",
 )
 
@@ -197,7 +198,9 @@ def main():
     if len(readme) > 1800:
         fail("README.md", "link-first entry exceeds 1800-character budget")
     for entry, target in (("README.md", "docs/document-delivery-preferences.md"),
-                          ("core/task-router.md", "../docs/document-delivery-preferences.md")):
+                          ("core/task-router.md", "../docs/document-delivery-preferences.md"),
+                          ("README.md", "docs/agent-workforce-model.md"),
+                          ("core/task-router.md", "../docs/agent-workforce-model.md")):
         if target not in documents.get(ROOT / entry, ""):
             fail(entry, "missing route to document delivery preferences")
     prompt = documents.get(ROOT / "core/universal-core.md", "")
@@ -214,7 +217,7 @@ def main():
     if imports != [".agent-os/core/universal-core.md"]:
         fail("adapters/claude/CLAUDE.md", "default import must load only standalone Core")
     advanced = documents.get(ROOT / "docs/advanced-guide.md", "")
-    for topic in ("四层架构", "目录结构", "渐进式加载", "快速开始", "使用流程", "扩展与维护", "版本路线", "当前限制"):
+    for topic in ("四层架构", "AI员工体系", "目录结构", "渐进式加载", "快速开始", "使用流程", "扩展与维护", "版本路线", "当前限制"):
         if topic not in advanced:
             fail("docs/advanced-guide.md", f"missing preserved topic: {topic}")
 

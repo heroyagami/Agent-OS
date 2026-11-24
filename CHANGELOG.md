@@ -2,11 +2,11 @@
 
 ## v0.8.5 — 2026-11-24
 
-- 新增 FileIdempotencyStore 单机持久化账本，采用任务摘要/幂等键哈希、原子写入、独占锁和 owner-only 文件权限。
+- 新增 FileIdempotencyStore 单机持久化账本，采用任务摘要/幂等键哈希、原子写入和独占锁；POSIX 使用 0600，Windows ACL 需部署者核验。
 - Codex/Claude 可注入本机 durable ledger；支持跨进程串行 reserve、重启 replay、冲突检测、unknown 隔离与证据化人工对账。
 - 修复 Runtime Core 在 submit/commit 异常时把结果不明记录误标为可失败重试的问题；现在一律隔离 unknown，禁止盲目重放。
 - 修正 Hermes 能力探测：只有 runs_idempotency 明确 supported 且 durable、审批响应与审批事件均受支持时，才报告对应能力。
-- 增加持久账本、并发 reservation、未知结果、陈旧锁、隐私和 Hermes capability 回归测试。
+- 增加持久账本、同进程/跨进程并发 reservation、未知结果、陈旧锁、隐私和 Hermes capability 回归测试；GitHub Actions 增加 Windows Node 测试任务。
 - 文件账本只适用于单机 Runtime 控制进程；跨机器分布式账本、真实宿主握手和端到端部署仍未完成。
 
 

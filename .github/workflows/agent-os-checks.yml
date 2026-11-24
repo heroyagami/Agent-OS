@@ -32,3 +32,16 @@ jobs:
         run: python3 scripts/check_experience_proposals.py
       - name: Check voice command privacy and confirmation gates
         run: python3 scripts/check_voice_commands.py
+
+  runtime-windows:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js for Runtime Adapter tests
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test Runtime Adapter contracts and Windows file ledger
+        run: npm test --prefix runtime

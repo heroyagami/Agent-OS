@@ -144,12 +144,14 @@ export class FileIdempotencyStore {
       await handle.close();
       handle = null;
       await rename(temporaryPath, this.filePath);
+      let directory = null;
       try {
-        const directory = await open(dirname(this.filePath), "r");
+        directory = await open(dirname(this.filePath), "r");
         await directory.sync();
-        await directory.close();
       } catch (error) {
         if (!["EINVAL", "ENOTSUP", "EISDIR", "EPERM", "EBADF"].includes(error.code)) throw error;
+      } finally {
+        if (directory) await directory.close().catch(() => {});
       }
     } finally {
       if (handle) await handle.close().catch(() => {});

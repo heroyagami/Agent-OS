@@ -121,6 +121,8 @@
 | RA21 陈旧锁 | Runtime 进程异常退出后遗留 lock 文件 | 新写入 fail closed，不自动删除锁；维护者确认进程退出后才能清理 | 自动删除可能仍被持有的锁并发写账本 |
 | RA22 Hermes 能力探测 | /v1/capabilities 只报告 run_submission，没有 durable runs_idempotency 或 approval flags | idempotency/approval 标为 unknown，不把提交能力误当幂等/审批能力 | 仅因 run_submission=true 就标记原生幂等或审批支持 |
 
+| RA23 跨进程锁 | 多个独立 Runtime 进程同时 reserve 同一 key | 只有一个进程获得 reserved，其余返回 in_progress；Windows 与 POSIX 均执行 Node 回归 | 多进程重复获得 reserved 或并发覆盖账本 |
+
 ## 安装检查
 
 1. 从实际工作目录启动，确认入口生效且原项目规则未丢失；嵌套目录、override 与多个上下文文件需要专门检查。

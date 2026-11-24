@@ -261,7 +261,7 @@ npm test --prefix runtime
 ## 当前限制
 
 - Runtime Adapter 目前只通过 mock transport/fetch/SDK 测试；未连接真实 Codex App Server、Claude Agent SDK 或 Hermes API Server，三者均保持 draft/not_deployed。
-- Runtime Adapter 不自带模型、搜索/媒体引擎、持久任务队列、生产幂等账本、记忆数据库或强制权限隔离；没有宿主与工具就不能凭规则生成成品。
+- Runtime Adapter 不自带模型、搜索/媒体引擎、持久任务队列、分布式幂等数据库、记忆数据库或强制权限隔离；当前提供的是单机文件型幂等账本。没有真实宿主与工具就不能凭规则生成成品。
 - 静态检查与自审不能证明执行质量、独立审查或安全隔离；重要任务仍需实际产物验证与适当人工/独立复核。
 - 不能保证减少返工或节省成本；需收集真实任务样本后评估。法律、医疗、财务等基础研究方法不替代专业审查。
 - 第一版不自动改写用户的其他项目、个人全局指令或共享 Skills；安装与后续经验更新须经过可审查的合并流程。

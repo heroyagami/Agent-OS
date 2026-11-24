@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { FileIdempotencyStore } from "../src/idempotency/file-store.mjs";
@@ -31,6 +33,8 @@ function reserveArgs(overrides = {}) {
     requestHash: fingerprintTask(value),
   };
 }
+
+const execFileAsync = promisify(execFile);
 
 const handle = {
   adapterId: "codex-app-server",
@@ -126,4 +130,29 @@ test("file ledger fails closed on corrupt state", async (t) => {
   await writeFile(filePath, "{broken", { mode: 0o600 });
   const store = new FileIdempotencyStore({ filePath });
   await assert.rejects(store.reserve(reserveArgs()), /not valid JSON/);
+});
+
+test("file ledger serializes reservations across separate OS processes", async (t) => {
+  const filePath = await ledgerPath(t);
+  const storeModule = new URL("../src/idempotency/file-store.mjs", import.meta.url).href;
+  const identityModule = new URL("../src/idempotency/identity.mjs", import.meta.url).href;
+  const childSource = `
+    import { FileIdempotencyStore } from ${JSON.stringify(storeModule)};
+    import { fingerprintTask } from ${JSON.stringify(identityModule)};
+    const task = ${JSON.stringify(task)};
+    const store = new FileIdempotencyStore({
+      filePath: ${JSON.stringify(filePath)}, lockTimeoutMs: 5000, retryIntervalMs: 10,
+    });
+    const result = await store.reserve({
+      key: task.idempotencyKey, taskId: task.taskId, agentId: task.agentId,
+      requestHash: fingerprintTask(task),
+    });
+    process.stdout.write(JSON.stringify({ status: result.status }));
+  `;
+  const children = await Promise.all(Array.from({ length: 4 }, () =>
+    execFileAsync(process.execPath, ["--input-type=module", "-e", childSource], { timeout: 15000 })
+  ));
+  const statuses = children.map((child) => JSON.parse(child.stdout).status);
+  assert.equal(statuses.filter((status) => status === "reserved").length, 1);
+  assert.equal(statuses.filter((status) => status === "in_progress").length, 3);
 });

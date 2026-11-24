@@ -49,7 +49,7 @@ Hermes Runs API 的 Idempotency-Key 按 API profile/凭据隔离，保留 24 小
 
 ## 持久化幂等账本
 
-FileIdempotencyStore 是 Node.js 内置模块实现的本机持久化账本，不需要 Redis、SQLite 或额外 npm 依赖。它通过 SHA-256 保存幂等键摘要与任务身份摘要，不保存原始 prompt 或原始幂等键；只保存最小运行 handle。写入使用临时文件、fsync、原子替换和独占锁，文件权限限制为 owner-only。
+FileIdempotencyStore 是 Node.js 内置模块实现的本机持久化账本，不需要 Redis、SQLite 或额外 npm 依赖。它通过 SHA-256 保存幂等键摘要与任务身份摘要，不保存原始 prompt 或原始幂等键；只保存最小运行 handle。写入使用临时文件、fsync、原子替换和独占锁。POSIX 文件以 0600 创建并检查 group/other 权限；Windows 不由本实现检查或修改 NTFS ACL，部署者必须核验账本文件及父目录只允许 Runtime 服务账户访问。
 
 ~~~js
 import { homedir } from "node:os";
@@ -62,6 +62,7 @@ const idempotencyStore = new FileIdempotencyStore({
 ~~~
 
 - 文件必须放在受保护的本机目录，不能放入公开仓库、同步网盘或客户共享目录。
+- Windows 部署不能把 0600 当作 ACL 保证；请用系统 ACL 工具核验账本文件和父目录的访问主体。
 - 该实现面向单机 Runtime 控制进程；本机多个进程通过锁串行写入，但不提供跨机器分布式一致性。多机部署需另行实现带唯一约束/事务的数据库后端。
 - 锁在进程异常退出后可能保留。系统不会自动删除疑似陈旧锁；必须先确认持锁进程已退出，再由维护者手动清理，否则继续 fail closed。
 - 账本不自动清理历史记录。不得在未核对运行状态前删除 reserved/unknown 记录。

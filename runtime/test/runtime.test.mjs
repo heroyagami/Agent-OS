@@ -119,7 +119,7 @@ test("Claude session resume is disabled without an external session store", asyn
   const adapter = new ClaudeAgentSdkAdapter({ query });
   await assert.rejects(
     adapter.submit({ ...task, sessionId: "session-1", executionPolicy: { claudeSessionOwnershipVerified: true } }),
-    /externally managed sessionStore/,
+    /secure external SessionStore integration/,
   );
 });
 

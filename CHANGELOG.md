@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.8.3 — 2026-11-24
+
+- Claude Agent SDK 的 session resume 暂时标记为 planned，不再接受 sessionId，避免在安全外部 SessionStore 尚未完成前发生本机 transcript 持久化或跨用户续接。
+- Claude Adapter 固定 persistSession=false；继续隔离用户/项目设置与未声明的 MCP 连接，并只允许 default 权限模式。
+- 文档明确官方 SessionStore 是本地 transcript 的镜像，不是替代品；后续必须先完成临时 CLAUDE_CONFIG_DIR 清理、凭据隔离和外部存储保留策略测试。
+
+
 ## v0.8.2 — 2026-11-24
 
 - Claude Agent SDK 默认关闭本机 session transcript 持久化；只有注入受控外部 sessionStore 才允许恢复会话。

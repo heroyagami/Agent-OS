@@ -9,12 +9,11 @@ function textFromContent(content) {
 }
 
 export class ClaudeAgentSdkAdapter {
-  constructor({ query, permissionHandler = null, sessionStore = null } = {}) {
+  constructor({ query, permissionHandler = null } = {}) {
     if (typeof query !== "function") throw new TypeError("Claude adapter requires query from @anthropic-ai/claude-agent-sdk.");
     this.id = "claude-agent-sdk";
     this.query = query;
     this.permissionHandler = permissionHandler;
-    this.sessionStore = sessionStore;
     this.runs = new Map();
   }
 
@@ -25,7 +24,7 @@ export class ClaudeAgentSdkAdapter {
       capabilities: normalizeCapabilities({
         submit: "supported", status: "supported", events: "supported", cancel: "supported",
         approval: this.permissionHandler ? "supported" : "not_configured",
-        resume: this.sessionStore ? "supported" : "not_configured", idempotency: "unsupported",
+        resume: "not_configured", idempotency: "unsupported",
         permissionControls: this.permissionHandler ? "supported" : "not_configured",
         structuredOutput: "supported", usage: "supported", multiAgent: "unknown",
       }),
@@ -38,11 +37,8 @@ export class ClaudeAgentSdkAdapter {
     if (permissionMode !== "default") {
       throw new Error("Claude adapter only permits default permission mode; plan/auto/acceptEdits/bypassPermissions are not enabled.");
     }
-    if (task.sessionId && !this.sessionStore) {
-      throw new Error("Claude session resume requires an externally managed sessionStore; local transcript persistence is disabled by default.");
-    }
-    if (task.sessionId && (!task.executionPolicy || task.executionPolicy.claudeSessionOwnershipVerified !== true)) {
-      throw new Error("Claude session resume requires a trusted control-plane check of session ownership.");
+    if (task.sessionId) {
+      throw new Error("Claude session resume is disabled in this prototype until a secure external SessionStore integration is implemented.");
     }
     const runId = randomUUID();
     const run = {
@@ -56,7 +52,7 @@ export class ClaudeAgentSdkAdapter {
       permissionPrompts: "host",
       settingSources: [],
       strictMcpConfig: true,
-      persistSession: Boolean(this.sessionStore),
+      persistSession: false,
       includePartialMessages: true,
       canUseTool: async (toolName, input, details) => {
         if (!this.permissionHandler) {
@@ -70,8 +66,6 @@ export class ClaudeAgentSdkAdapter {
       },
     };
     if (task.workingDirectory) options.cwd = task.workingDirectory;
-    if (this.sessionStore) options.sessionStore = this.sessionStore;
-    if (task.sessionId) options.resume = task.sessionId;
     if (task.model) options.model = task.model;
     if (task.budget && typeof task.budget.maxCostUsd === "number") options.maxBudgetUsd = task.budget.maxCostUsd;
     try {

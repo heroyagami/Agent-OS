@@ -27,7 +27,7 @@ Adapter 不拥有员工权限。员工 profile 必须同时为 approved/running 
 | --- | --- | --- | --- |
 | Hermes | HTTP API + SSE Runs API | 提交、状态、事件流、停止、审批、unknown-run 显式恢复；使用 Idempotency-Key | 幂等键按 API profile/凭据隔离并保留 24 小时；仅允许续接 API Server 自有 session；实际工具权限仍由服务端配置；只有在控制面核实该 profile 的工具 allowlist/denylist 与文件/网络边界后，才可显式设置 permissionControlsVerified=true；默认 not_configured，Runtime Core 会阻塞派单 |
 | Codex | App Server JSON-RPC over stdio | 初始化、thread/turn、事件、停止、续接、审批响应；内置 JSONL 子进程传输 | sandbox/approvalPolicy 在 thread/start 或 thread/resume 设置，turn/start 只提交输入；只开放 read-only/workspace-write；外部网络/Connector 权限未映射 |
-| Claude Code | TypeScript Agent SDK query() | 异步消息流、session resume、usage、关闭进程式取消、canUseTool 审批回调 | 不提供原生任务幂等键；必须使用持久化幂等账本；必须注入 permissionHandler 才会被 Runtime Core 选中；缺少 handler 时 permissionControls=not_configured，且需审批的工具调用默认拒绝 |
+| Claude Code | TypeScript Agent SDK query() | 异步消息流、usage、关闭进程式取消、canUseTool 审批回调；session resume 暂未启用 | 不提供原生任务幂等键；必须使用持久化幂等账本；必须注入 permissionHandler 才会被 Runtime Core 选中；缺少 handler 时 permissionControls=not_configured，且需审批的工具调用默认拒绝 |
 
 官方接口依据：
 - Hermes：[Programmatic Integration](https://hermes-agent.nousresearch.com/docs/developer-guide/programmatic-integration) · [API Server](https://hermes-agent.nousresearch.com/docs/user-guide/features/api-server)
@@ -44,7 +44,7 @@ Hermes Runs API 的 Idempotency-Key 按 API profile/凭据隔离，保留 24 小
 
 - **Hermes**：Runs API 不能接管 CLI、TUI、Desktop、ACP 或消息平台拥有的 session。续接必须由可信控制面确认 session 属于 API Server。status=unknown 时先读取 admission_id 与 execution_generation，再由人工/控制面明确调用 resolveUnknown；禁止自动重放。
 - **Codex**：sandbox 与 approvalPolicy 属于 thread 配置，不是 turn/start 字段。默认 read-only；只有任务已声明写权限、岗位授权且指定 workingDirectory 时才允许 workspace-write。danger-full-access 与外部网络/Connector 权限当前不开放。
-- **Claude**：permissionPrompts=host 时由 canUseTool 回调处理审批；没有审批桥接时设置 permissionPrompts=none，拒绝需要交互批准的工具调用。query.close() 是关闭底层进程的强制取消，不等同于优雅中断。session resume 需要受控外部 sessionStore，并由可信控制面确认 session 归属。
+- **Claude**：permissionPrompts=host 时由 canUseTool 回调处理审批；没有审批桥接时设置 permissionPrompts=none，拒绝需要交互批准的工具调用。query.close() 是关闭底层进程的强制取消，不等同于优雅中断。session resume 当前 not_configured；只有完成安全外部 SessionStore 适配、临时配置目录清理和会话归属校验后才会启用。
 - **密钥**：Hermes API Key、Claude 凭据、Codex 登录状态均来自宿主安全配置，不写入 registry、仓库、日志或任务正文。
 
 ## 幂等账本接口约定
@@ -64,7 +64,7 @@ node --test runtime/test/*.test.mjs
 python3 scripts/check_runtime_registry.py
 ~~~
 
-Hermes 使用 baseUrl 与 apiKey 注入，密钥只来自宿主安全配置/环境变量，不得写入仓库。permissionControlsVerified 默认为 false，不能仅凭管理员勾选；必须先完成 profile 工具策略和隔离测试，再由受信任控制面设置。Codex 默认启动 codex app-server，可注入其他符合 JSON-RPC transport 接口的实现。Claude 通过以下方式创建 Adapter；如需续接会话，应额外注入 SDK SessionStore 实现，并由控制面管理 session ownership：
+Hermes 使用 baseUrl 与 apiKey 注入，密钥只来自宿主安全配置/环境变量，不得写入仓库。permissionControlsVerified 默认为 false，不能仅凭管理员勾选；必须先完成 profile 工具策略和隔离测试，再由受信任控制面设置。Codex 默认启动 codex app-server，可注入其他符合 JSON-RPC transport 接口的实现。Claude 通过以下方式创建 Adapter。当前版本不接受 sessionId，默认不持久化会话 transcript：
 
 ~~~js
 import { query } from "@anthropic-ai/claude-agent-sdk";

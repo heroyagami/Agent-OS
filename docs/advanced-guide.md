@@ -4,7 +4,7 @@
 
 一套供智能体复用的任务执行与质量控制方法：用精简核心保持行动一致，按需加载专业方法，围绕实际产物验收，减少遗漏和返工。
 
-**当前版本：v0.8.2。** 在规则与工作流之外，新增宿主无关的 Runtime Core 和 Hermes、Codex App Server、Claude Agent SDK 三种 Adapter 原型。它们尚未连接真实宿主；不能把代码存在、mock 测试通过或 Adapter manifest 登记视为运行时已部署。
+**当前版本：v0.8.3。** 在规则与工作流之外，新增宿主无关的 Runtime Core 和 Hermes、Codex App Server、Claude Agent SDK 三种 Adapter 原型。它们尚未连接真实宿主；不能把代码存在、mock 测试通过或 Adapter manifest 登记视为运行时已部署。
 
 ## 从哪里开始
 
@@ -250,7 +250,8 @@ npm test --prefix runtime
 | v0.7.0 历史 | 新增语音指挥 Skill、命令 Schema、确认/授权工作流和隐私校验 | 仅完成协议；音频采集、STT 和宿主队列尚未接通 |
 | v0.8.0 历史 | 新增 Runtime Core、统一任务/事件契约、Hermes/Codex/Claude 三种 Adapter 原型和 Node.js mock 测试 | 真实宿主仍为 draft/not_deployed；无默认宿主、员工绑定和持久幂等账本 |
 | v0.8.1 历史 | 所有正式任务强制 permissionControls；Hermes profile 权限核验、Claude 审批回调与权限模式收敛 | 三种宿主仍未连接真实运行环境；安全配置需在隔离环境完成 |
-| v0.8.2 当前 | Claude 默认关闭本机 transcript 持久化，隔离本机设置与 MCP 配置；会话恢复必须使用受控外部 sessionStore | 三种宿主仍为 prototype/not_deployed；无真实运行证据 |
+| v0.8.2 历史 | Claude 默认关闭本机 transcript 持久化，隔离本机设置与 MCP 配置 | 三种宿主仍为 prototype/not_deployed；无真实运行证据 |
+| v0.8.3 当前 | Claude session resume 暂未启用；persistSession=false，直到安全外部 SessionStore 和临时配置目录清理验收完成 | 三种宿主仍为 prototype/not_deployed；无真实运行证据 |
 | 后续计划 | 按实际需求验证员工注册、宿主适配和代表任务运行 | 有版本化证据和实际需求，避免继续堆叠流程 |
 | v1.0 目标 | 稳定规范、升级/回滚约定、经验证的适配范围 | 核心接口稳定且有跨任务、跨宿主的持续证据 |
 

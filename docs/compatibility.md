@@ -33,7 +33,7 @@ v0.2.0 默认只复制 [通用提示词](../core/universal-core.md)，不依赖�
 | 宿主 | 官方接入面 | 适配方式 | 当前验证状态 |
 | --- | --- | --- | --- |
 | Hermes | [API Server](https://hermes-agent.nousresearch.com/docs/user-guide/features/api-server) · [Programmatic Integration](https://hermes-agent.nousresearch.com/docs/developer-guide/programmatic-integration) | HTTP Runs API、SSE、stop、approval、Idempotency-Key、unknown-run 显式恢复 | mock 测试；真实服务未连接。续接只允许 API Server 自有 session；幂等键按 profile/凭据隔离并保留 24 小时；profile 权限未人工核验前不允许正式派单 |
-| Codex | [App Server protocol](https://github.com/openai/codex/tree/main/codex-rs/app-server) | JSON-RPC over stdio；thread/start、thread/resume 设置 sandbox/approvalPolicy，turn/start 提交输入 | mock 测试；真实 CLI/协议版本未验证。默认 read-only，只开放 workspace-write；非原生幂等，需持久账本 |
+| Codex | [App Server protocol](https://github.com/openai/codex/tree/main/codex-rs/app-server) | JSON-RPC over stdio；thread/start、thread/resume 设置 sandbox/approvalPolicy，turn/start 提交输入 | mock 测试；真实 CLI/协议版本未验证。默认 read-only，只开放 workspace-write；本机 transcript 持久化需 Adapter/任务双重 opt-in；非原生幂等，需持久账本 |
 | Claude Code | [Agent SDK overview](https://code.claude.com/docs/en/agent-sdk/overview) · [TypeScript reference](https://code.claude.com/docs/en/agent-sdk/typescript) | query() 流式事件、session resume、usage、canUseTool 审批回调 | mock 测试；真实 SDK/CLI 未连接。必须配置 permissionHandler 才允许 Runtime Core 选择；只允许 default 权限模式；默认 persistSession=false，不本机持久化 transcript；session resume 暂未启用；非原生幂等，需持久账本 |
 
 ### Runtime Adapter 验证边界
@@ -44,6 +44,7 @@ v0.2.0 默认只复制 [通用提示词](../core/universal-core.md)，不依赖�
 - Codex/Claude 的本适配没有原生任务幂等键；未接入 durable=true 的持久化幂等账本时 Runtime Core 会阻塞派单。
 - Runtime Core 对所有正式任务都要求宿主提供 permissionControls；T3 任务还要求 approval。Hermes 默认 not_configured，必须完成 profile 权限核验；Claude 必须配置 permissionHandler。
 - Claude Agent SDK 默认关闭本机 session transcript 持久化，隔离用户/项目设置与未声明的 MCP 配置；session resume 暂未启用。官方 SessionStore 是本地 transcript 的镜像，须先验证临时配置目录清理和外部存储保留策略。
+- Codex App Server 的 thread/start 默认创建持久化本机 thread；Runtime Adapter 默认关闭 submit，只有宿主和单个任务双重显式允许本机 transcript 持久化时才可启动。
 - 当前没有真实 API 凭据、宿主进程或用户设备访问；三种宿主全部保持 draft/not_deployed，无默认宿主、无员工绑定、无真实运行证据。
 
 ## 验证状态

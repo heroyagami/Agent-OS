@@ -12,7 +12,7 @@ const task = {
   prompt: "Run a harmless isolated test.", riskTier: "T1",
   requiredCapabilities: ["events"],
   permissionsRequired: { read: ["workspace"], write: [], externalActions: [] },
-  executionPolicy: { sandbox: "read-only" },
+  executionPolicy: { sandbox: "read-only", allowLocalTranscriptPersistence: true },
 };
 
 test("Hermes API capability probe and idempotent submit", async () => {
@@ -71,9 +71,16 @@ class FakeCodexTransport {
   close() {}
 }
 
+test("Codex local transcript persistence is disabled without two explicit opt-ins", async () => {
+  const adapter = new CodexAppServerAdapter({ transport: new FakeCodexTransport() });
+  const health = await adapter.probe();
+  assert.equal(health.capabilities.submit, "not_configured");
+  await assert.rejects(adapter.submit(task), /both adapter-level and task-level local-persistence opt-ins are required/);
+});
+
 test("Codex App Server uses thread sandbox policy before turn/start", async () => {
   const transport = new FakeCodexTransport();
-  const adapter = new CodexAppServerAdapter({ transport });
+  const adapter = new CodexAppServerAdapter({ transport, allowLocalPersistence: true });
   const handle = await adapter.submit(task);
   const events = [];
   for await (const event of adapter.streamEvents(handle)) events.push(event);
@@ -83,7 +90,7 @@ test("Codex App Server uses thread sandbox policy before turn/start", async () =
 });
 
 test("Codex refuses danger-full-access and external actions", async () => {
-  const adapter = new CodexAppServerAdapter({ transport: new FakeCodexTransport() });
+  const adapter = new CodexAppServerAdapter({ transport: new FakeCodexTransport(), allowLocalPersistence: true });
   await assert.rejects(adapter.submit({ ...task, executionPolicy: { sandbox: "danger-full-access" } }), /danger-full-access is not enabled/);
   await assert.rejects(adapter.submit({
     ...task, permissionsRequired: { read: [], write: [], externalActions: ["network"] },

@@ -41,7 +41,7 @@
       "implementation_status": "prototype",
       "entrypoint": "src/adapters/codex-app-server.mjs",
       "capabilities": {
-        "submit": "implemented",
+        "submit": "host_dependent",
         "status": "local_only",
         "events": "implemented",
         "cancel": "implemented",

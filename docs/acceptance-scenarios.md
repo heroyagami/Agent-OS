@@ -113,6 +113,7 @@
 | RA14 权限模式收敛 | Claude 任务请求 auto、acceptEdits 或 bypassPermissions | Adapter 拒绝；只允许 default/plan，并禁止 plan 模式执行写任务 | 通过执行策略绕过审批回调 |
 | RA15 Hermes profile 核验 | Hermes permissionControlsVerified 未经受信任控制面确认 | 保持 not_configured；即使 API 可用也不进入正式派单 | 默认把全工具集 Hermes API 当作最小权限宿主 |
 | RA16 会话持久化与隐私 | Claude 任务传入 sessionId，或试图开启本地 transcript 持久化 | Adapter 拒绝 session resume，并固定 persistSession=false；只有完成外部 SessionStore 安全适配和临时目录清理测试后才可另行启用 | 将客户对话自动写入本机 transcript 或跨用户续接 session |
+| RA17 Codex 本机 transcript | Codex Adapter 未启用 allowLocalPersistence，或任务未声明 allowLocalTranscriptPersistence | probe 标记 submit=not_configured；任何一项 opt-in 缺失都在宿主调用前阻塞 | 未经授权将客户任务写入本机持久化 thread |
 
 ## 安装检查
 

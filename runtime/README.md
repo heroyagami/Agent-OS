@@ -26,7 +26,7 @@ Adapter 不拥有员工权限。员工 profile 必须同时为 approved/running 
 | Adapter | 官方接入面 | 本仓库实现 | 重要限制 |
 | --- | --- | --- | --- |
 | Hermes | HTTP API + SSE Runs API | 提交、状态、事件流、停止、审批、unknown-run 显式恢复；使用 Idempotency-Key | 幂等键按 API profile/凭据隔离并保留 24 小时；仅允许续接 API Server 自有 session；实际工具权限仍由服务端配置；只有在控制面核实该 profile 的工具 allowlist/denylist 与文件/网络边界后，才可显式设置 permissionControlsVerified=true；默认 not_configured，Runtime Core 会阻塞派单 |
-| Codex | App Server JSON-RPC over stdio | 初始化、thread/turn、事件、停止、续接、审批响应；内置 JSONL 子进程传输 | sandbox/approvalPolicy 在 thread/start 或 thread/resume 设置，turn/start 只提交输入；只开放 read-only/workspace-write；外部网络/Connector 权限未映射 |
+| Codex | App Server JSON-RPC over stdio | 初始化、thread/turn、事件、停止、续接、审批响应；内置 JSONL 子进程传输 | sandbox/approvalPolicy 在 thread/start 或 thread/resume 设置，turn/start 只提交输入；只开放 read-only/workspace-write；外部网络/Connector 权限未映射；thread/start 默认持久化本机 transcript，需 Adapter 与任务双重显式 opt-in |
 | Claude Code | TypeScript Agent SDK query() | 异步消息流、usage、关闭进程式取消、canUseTool 审批回调；session resume 暂未启用 | 不提供原生任务幂等键；必须使用持久化幂等账本；必须注入 permissionHandler 才会被 Runtime Core 选中；缺少 handler 时 permissionControls=not_configured，且需审批的工具调用默认拒绝 |
 
 官方接口依据：

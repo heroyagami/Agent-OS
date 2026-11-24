@@ -23,10 +23,11 @@ function codexThreadPolicy(task) {
 }
 
 export class CodexAppServerAdapter {
-  constructor({ transport = new JsonlProcessTransport(), clientVersion = "0.1.0" } = {}) {
+  constructor({ transport = new JsonlProcessTransport(), clientVersion = "0.1.0", allowLocalPersistence = false } = {}) {
     this.id = "codex-app-server";
     this.transport = transport;
     this.clientVersion = clientVersion;
+    this.allowLocalPersistence = allowLocalPersistence === true;
     this.ready = false;
     this.runs = new Map();
     this.transport.onMessage((message) => this.handleMessage(message));
@@ -46,7 +47,7 @@ export class CodexAppServerAdapter {
       return {
         status: "ready", observedAt: new Date().toISOString(),
         capabilities: normalizeCapabilities({
-          submit: "supported", status: "supported", events: "supported", cancel: "supported",
+          submit: this.allowLocalPersistence ? "supported" : "not_configured", status: "supported", events: "supported", cancel: "supported",
           approval: typeof this.transport.respond === "function" ? "supported" : "not_configured",
           resume: "supported", idempotency: "unsupported", permissionControls: "supported",
           structuredOutput: "supported", usage: "unknown", multiAgent: "unknown",
@@ -58,6 +59,9 @@ export class CodexAppServerAdapter {
     }
   }
   async submit(task) {
+    if (!this.allowLocalPersistence || !task.executionPolicy || task.executionPolicy.allowLocalTranscriptPersistence !== true) {
+      throw new Error("Codex thread/start persists local transcripts; both adapter-level and task-level local-persistence opt-ins are required.");
+    }
     await this.ensureReady();
     const policy = codexThreadPolicy(task);
     let threadResult;

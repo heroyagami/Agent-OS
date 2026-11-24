@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.8.4 — 2026-11-24
+
+- Codex App Server 的 thread/start 会持久化本机 thread；Adapter 默认关闭 submit，只有宿主配置 allowLocalPersistence=true 且单个任务显式 allowLocalTranscriptPersistence=true 才能启动。
+- 继续限制 Codex 沙箱为 read-only/workspace-write，不开放 danger-full-access 与外部网络/Connector 权限。
+- 新增 RA17，验证本机 transcript 持久化的双重 opt-in，避免未经批准把客户任务写入宿主磁盘。
+
+
 ## v0.8.3 — 2026-11-24
 
 - Claude Agent SDK 的 session resume 暂时标记为 planned，不再接受 sessionId，避免在安全外部 SessionStore 尚未完成前发生本机 transcript 持久化或跨用户续接。

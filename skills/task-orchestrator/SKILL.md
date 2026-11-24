@@ -22,6 +22,7 @@ description: 编排复杂任务的拆解、依赖、风险验证、阶段审查�
 - **对抗审查**：执行第 6 步时，独立模型可以帮助提出反例，但发现必须能被证据定位；模型独立不等于运行已验证，遵守 T3 审查授权与闸门。
 - **反复错误与复盘**：同类故障重复、完成复杂任务或用户要求专属工作模式时，读 [纠错、复盘与专属模式](references/learning-and-personalization.md)。原则是把有效约束放到测试和结构中，候选 Skill 经审核再共享。
 - **岗位化员工团队**：涉及长期岗位、AI设计AI、员工权限或跨Agent交接时，读 [AI员工操作模型](../../docs/agent-workforce-model.md)；需要设计/拆分岗位时再读 [agent-architecture](../agent-architecture/SKILL.md)，正式配置按 [注册中心](../../registry/README.md) 管理。岗位文档不等于运行时。
+- **任务分派与员工匹配**：需要从注册中心选择可执行员工、核对岗位状态/权限/预算或管理任务状态时，读 [agent-dispatcher](../agent-dispatcher/SKILL.md) 和 [派单工作流](../../workflows/agent-dispatch.md)。它不替代本 Skill 的复杂任务拆解，也不在没有运行队列时声称已派单。
 
 ## 记录与范围
 

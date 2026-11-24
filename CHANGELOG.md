@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.5.0 — 2026-11-24
+
+- 新增 agent-dispatcher Skill 与 agent-dispatch 工作流，明确任务接收、员工匹配、权限/预算闸门、状态流转和阻塞升级。
+- 新增 Task JSON Schema 与任务简报模板；任务正文和客户资料必须存入受控私有队列，不进入公开注册仓库。
+- 新增 AI 派单员岗位草案，权限仅限读取注册配置；状态为 draft / not_deployed，不代表已接通运行队列。
+- 将派单能力接入 Task Router、Task Orchestrator、员工治理文档、注册中心和自动检查。
+- 扩展注册校验器，检查任务契约和员工所引用的 Skills；自动检查仍不代表真实宿主派单能力已部署。
+
+
 ## v0.4.0 — 2026-11-24
 
 - 新增 agent-architecture Skill 与 AI 员工团队设计工作流，先盘点复用能力，再决定 Agent、Skill、Workflow 或 Tool。

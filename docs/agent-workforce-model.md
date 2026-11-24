@@ -72,6 +72,15 @@ Workflow 应定义状态、依赖、超时、有限重试、幂等键、失败�
 
 听错人名、案件、文件、金额、日期或目标对象时先澄清。语音身份或“听起来像本人”不能替代账户认证和操作授权；发布、删除、对外发送、资金及客户数据外发仍走既定审批。宿主没有语音能力时，使用文字入口，不能声称语音已接通。
 
+## 员工调度中心与任务契约
+
+- **调度方法**：[agent-dispatcher Skill](../skills/agent-dispatcher/SKILL.md) 根据岗位、能力、生命周期、权限和预算提出派单方案。
+- **状态工作流**：[agent-dispatch 工作流](../workflows/agent-dispatch.md) 定义任务状态、合法流转、阻塞、审批、重试和终态。
+- **任务契约**：[task.schema.json](../registry/schema/task.schema.json) 规定任务元数据格式；[任务模板](../templates/agent-task.md) 供人工审阅和记录。
+- **安全闸门**：只有 lifecycle=approved 且 runtime_status=running 的员工才可接收正式派单。draft、in_review、not_deployed、configured、suspended 或 unknown 均不可作为已运行员工。
+
+任务内容、客户材料和原始文件不得写入公开仓库的注册索引。公开仓库只保存 Schema、岗位配置和流程规范；实际任务记录应存放在受访问控制的宿主队列或私有存储中。当前没有接入任务队列，因此本阶段提供派单契约与规则，不声称已经实现自动分发。
+
 ## 所有员工共用的运行规则
 
 1. **任务生命周期**：收到 → 分类 → 规划 → 分派 → 执行 → 审查 → 待审批/阻塞 → 交付 → 复盘关闭。每次状态变化都要有负责人和可追踪记录。

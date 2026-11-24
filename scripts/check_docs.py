@@ -13,7 +13,7 @@ from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = (
-    "task-orchestrator", "agent-architecture", "visual-design", "video-production",
+    "task-orchestrator", "agent-architecture", "agent-dispatcher", "visual-design", "video-production",
     "software-engineering", "deep-research", "modern-web-guidance",
 )
 REQUIRED = (
@@ -24,7 +24,7 @@ REQUIRED = (
     )),
     *(f"templates/{name}.md" for name in (
         "task-brief", "execution-plan", "review-report", "project-context",
-        "experience-proposal", "agent-role", "agent-team-design", "agent-handoff",
+        "experience-proposal", "agent-role", "agent-team-design", "agent-handoff", "agent-task",
     )),
     "adapters/README.md", "adapters/codex/README.md", "adapters/codex/AGENTS.md",
     "adapters/claude/README.md", "adapters/claude/CLAUDE.md",
@@ -32,9 +32,10 @@ REQUIRED = (
     "adapters/hermes/SOUL.md", "docs/compatibility.md",
     "docs/acceptance-scenarios.md", "docs/document-delivery-preferences.md",
     "docs/agent-workforce-model.md", "docs/advanced-guide.md",
-    "workflows/agent-team-design.md", "registry/README.md",
+    "workflows/agent-team-design.md", "workflows/agent-dispatch.md", "registry/README.md",
     "registry/registry.json", "registry/schema/agent.schema.json",
-    "registry/schema/registry.schema.json", "registry/agents/ai-architect.json",
+    "registry/schema/registry.schema.json", "registry/schema/task.schema.json",
+    "registry/agents/ai-architect.json", "registry/agents/agent-dispatcher.json",
     "scripts/check_agent_registry.py", ".github/workflows/agent-os-checks.yml",
     "docs/original-prompt.md", "scripts/check_docs.py",
 )
@@ -208,7 +209,11 @@ def main():
                           ("core/task-router.md", "../registry/README.md"),
                           ("docs/agent-workforce-model.md", "../registry/README.md"),
                           ("docs/agent-workforce-model.md", "../skills/agent-architecture/SKILL.md"),
-                          ("docs/agent-workforce-model.md", "../workflows/agent-team-design.md")):
+                          ("docs/agent-workforce-model.md", "../workflows/agent-team-design.md"),
+                          ("core/task-router.md", "../skills/agent-dispatcher/SKILL.md"),
+                          ("docs/agent-workforce-model.md", "../skills/agent-dispatcher/SKILL.md"),
+                          ("docs/agent-workforce-model.md", "../workflows/agent-dispatch.md"),
+                          ("docs/agent-workforce-model.md", "../registry/schema/task.schema.json")):
         if target not in documents.get(ROOT / entry, ""):
             fail(entry, f"missing required link: {target}")
     prompt = documents.get(ROOT / "core/universal-core.md", "")
@@ -225,7 +230,7 @@ def main():
     if imports != [".agent-os/core/universal-core.md"]:
         fail("adapters/claude/CLAUDE.md", "default import must load only standalone Core")
     advanced = documents.get(ROOT / "docs/advanced-guide.md", "")
-    for topic in ("四层架构", "AI员工体系", "员工注册中心", "目录结构", "渐进式加载", "快速开始", "使用流程", "扩展与维护", "版本路线", "当前限制"):
+    for topic in ("四层架构", "AI员工体系", "员工注册中心", "员工调度中心", "目录结构", "渐进式加载", "快速开始", "使用流程", "扩展与维护", "版本路线", "当前限制"):
         if topic not in advanced:
             fail("docs/advanced-guide.md", f"missing preserved topic: {topic}")
 

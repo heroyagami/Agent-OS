@@ -7,6 +7,9 @@
 - [注册索引](registry.json)：所有已登记 Agent 与团队。
 - [Agent Schema](schema/agent.schema.json)：单个员工配置格式。
 - [Registry Schema](schema/registry.schema.json)：注册索引格式。
+- [Task Schema](schema/task.schema.json)：派单任务元数据契约。
+- [AI派单员岗位卡](agents/agent-dispatcher.json)：首个派单岗位草案。
+- [派单工作流](../workflows/agent-dispatch.md)：状态、资格、权限、预算与升级规则。
 - [AI架构师岗位卡](agents/ai-architect.json)：首个架构师岗位定义，目前仅为草案。
 - [架构师 Skill](../skills/agent-architecture/SKILL.md) · [团队设计工作流](../workflows/agent-team-design.md)。
 
@@ -26,7 +29,7 @@ runtime_status 独立记录真实运行状态：
 - suspended：已暂停。
 - unknown：无法核实。
 
-当前 AI 架构师为 **draft / not_deployed**，不是已经运行的 Agent。
+当前 AI 架构师和 AI 派单员均为 **draft / not_deployed**，不是已经运行的 Agent。
 
 ## 新增员工流程
 
@@ -37,6 +40,7 @@ runtime_status 独立记录真实运行状态：
 5. 运行 python3 scripts/check_agent_registry.py 和 python3 scripts/check_docs.py。
 6. 维护者审查权限、数据、预算、审批、停止条件和验收证据，再批准变更。
 7. 实际部署须按目标宿主配置并进行隔离测试和运行验证。
+8. 任务记录按 [Task Schema](schema/task.schema.json) 生成，但正文和客户数据只进入受控私有队列，不提交公共仓库。
 
 ## 最小权限与隐私
 

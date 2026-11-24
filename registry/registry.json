@@ -7,6 +7,12 @@
       "profile": "agents/ai-architect.json",
       "lifecycle_status": "draft",
       "runtime_status": "not_deployed"
+    },
+    {
+      "id": "agent-dispatcher",
+      "profile": "agents/agent-dispatcher.json",
+      "lifecycle_status": "draft",
+      "runtime_status": "not_deployed"
     }
   ],
   "teams": []

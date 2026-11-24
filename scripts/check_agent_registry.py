@@ -39,8 +39,9 @@ def main():
     errors = []
     schema = load(REGISTRY_DIR / "schema/agent.schema.json", errors)
     index_schema = load(REGISTRY_DIR / "schema/registry.schema.json", errors)
+    task_schema = load(REGISTRY_DIR / "schema/task.schema.json", errors)
     index = load(REGISTRY_DIR / "registry.json", errors)
-    if not all(isinstance(x, dict) for x in (schema, index_schema, index)):
+    if not all(isinstance(x, dict) for x in (schema, index_schema, task_schema, index)):
         print("FAIL\n" + "\n".join(errors or ["registry files must be JSON objects"]))
         return 1
 
@@ -51,6 +52,11 @@ def main():
         errors.append("agent.schema.json: unexpected JSON Schema dialect")
     if not {"registry_version", "updated_at", "agents", "teams"}.issubset(set(index_schema.get("required", []))):
         errors.append("registry.schema.json: incomplete required fields")
+    task_required = {"schema_version", "task_id", "goal", "status", "priority", "risk_tier", "requester", "acceptance_criteria", "inputs", "required_capabilities", "assigned_agent_id", "permissions_required", "approval", "budget", "deadline", "idempotency_key", "dependencies", "outputs", "evidence", "blockers", "next_action", "created_at", "updated_at"}
+    if not task_required.issubset(set(task_schema.get("required", []))) or task_required - set(task_schema.get("properties", {})):
+        errors.append("task.schema.json: missing required task contract fields")
+    if task_schema.get("$schema") != "https://json-schema.org/draft/2020-12/schema":
+        errors.append("task.schema.json: unexpected JSON Schema dialect")
     if not VERSION_RE.fullmatch(str(index.get("registry_version", ""))):
         errors.append("registry.json: invalid registry_version")
     try:
@@ -105,6 +111,9 @@ def main():
             value = item.get(field)
             if not isinstance(value, list) or not all(nonempty(x) for x in value):
                 errors.append(f"{relative}: {field} must be an array of non-empty strings")
+        for skill_name in item.get("skills", []):
+            if not (ROOT / "skills" / skill_name / "SKILL.md").is_file():
+                errors.append(f"{relative}: referenced Skill does not exist: {skill_name}")
 
         tools = item.get("tools") if isinstance(item.get("tools"), dict) else {}
         if tools.get("policy") not in {"deny_by_default", "explicit_allowlist"}:

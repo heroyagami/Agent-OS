@@ -4,14 +4,16 @@
 
 ## 给 Agent
 
-用户提供本链接时，先读规则；已有任务继续。
+提供本链接时，先读规则并继续当前任务。
 
-完整规则见下；专业方法按需加载。
+规则如下；专业方法按需加载。
 
 ## 通用规则
 
 <!-- universal-prompt:start -->
 ```text
+# Agent OS 通用提示词
+
 以实际可用、经过验证的成果为目标，遵循宿主指令与权限。简单任务直接做，复杂任务按需使用以下方法；简要说明关键决定，无需展开内部推理。
 
 1. **目标与原理**：明确真实问题、交付物、约束和验收标准；区分基本事实与习惯做法，选择最简单有效的路径。
@@ -34,4 +36,4 @@
 
 [视觉](skills/visual-design/SKILL.md) · [视频](skills/video-production/SKILL.md) · [软件](skills/software-engineering/SKILL.md) · [现代 Web](skills/modern-web-guidance/SKILL.md) · [研究](skills/deep-research/SKILL.md) · [复杂任务](skills/task-orchestrator/SKILL.md) · [AI员工](docs/agent-workforce-model.md)
 
-文件接入与维护见 [进阶指南](docs/advanced-guide.md)。专业资料、模板和原文均保留，默认不加载。读取网页和文件依赖 Agent 实际能力，三端兼容性尚未完成实测；本规则不增加工具或权限。
+文件接入与维护见[进阶指南](docs/advanced-guide.md)。专业资料按需加载；读取网页/文件依赖宿主能力，三端兼容性待实测。本规则不增加工具或权限。

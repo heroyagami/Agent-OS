@@ -3,6 +3,7 @@
 本目录说明语音指挥协议，不存储录音、完整转写或真实命令记录。
 
 ## 组件
+
 - [语音解析 Skill](../skills/voice-command-router/SKILL.md)
 - [语音命令工作流](../workflows/voice-command.md)
 - [命令 Schema](../registry/schema/voice-command.schema.json)
@@ -10,6 +11,7 @@
 - [校验脚本](../scripts/check_voice_commands.py)
 
 ## 隐私与授权
+
 - 原始音频和完整转写留在受控私有系统。
 - 公开仓库只保留脱敏协议和虚构测试，不提交真实语音命令。
 - 声纹/声音相似度不能替代已认证账户会话。

@@ -6,3 +6,5 @@ export * from "./adapters/hermes-http.mjs";
 export * from "./adapters/codex-app-server.mjs";
 export * from "./adapters/claude-agent-sdk.mjs";
 export * from "./transports/jsonl-process-transport.mjs";
+export * from "./idempotency/identity.mjs";
+export * from "./idempotency/file-store.mjs";

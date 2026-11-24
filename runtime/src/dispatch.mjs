@@ -1,4 +1,5 @@
 import { assertTaskEnvelope, RuntimeBlockedError } from "./contracts.mjs";
+import { fingerprintTask } from "./idempotency/identity.mjs";
 
 function isSubset(required = [], granted = []) {
   const available = new Set(granted);
@@ -48,19 +49,31 @@ export async function dispatchTask({
   });
   const { adapter, health } = selected;
   const nativeIdempotency = health.capabilities.idempotency === "supported";
-  if (!nativeIdempotency && (!idempotencyStore || idempotencyStore.durable !== true)) {
+  const useLedger = idempotencyStore !== null;
+  if (!nativeIdempotency && !useLedger) {
     throw new RuntimeBlockedError("This host has no native idempotency guarantee; a durable Agent OS idempotency store is required.", {
       adapterId: adapter.id, taskId: task.taskId,
     });
   }
+  if (useLedger && (idempotencyStore.durable !== true ||
+      typeof idempotencyStore.reserve !== "function" ||
+      typeof idempotencyStore.commit !== "function" ||
+      typeof idempotencyStore.markUnknown !== "function")) {
+    throw new RuntimeBlockedError("The supplied idempotency store must be durable and implement reserve(), commit() and markUnknown().", {
+      adapterId: adapter.id, taskId: task.taskId,
+    });
+  }
   let reservation = null;
-  if (!nativeIdempotency && idempotencyStore) {
+  if (useLedger) {
     reservation = await idempotencyStore.reserve({
-      key: task.idempotencyKey, taskId: task.taskId, agentId: task.agentId,
+      key: task.idempotencyKey,
+      taskId: task.taskId,
+      agentId: task.agentId,
+      requestHash: fingerprintTask(task),
     });
     if (reservation.status === "replay" && reservation.handle) return reservation.handle;
     if (reservation.status !== "reserved") {
-      throw new RuntimeBlockedError("Idempotency reservation was not granted.", {
+      throw new RuntimeBlockedError("Idempotency reservation was not granted; the existing key cannot be submitted again.", {
         adapterId: adapter.id, taskId: task.taskId, reservationStatus: reservation.status,
       });
     }
@@ -68,13 +81,23 @@ export async function dispatchTask({
   try {
     const handle = await adapter.submit(task);
     const result = { ...handle, adapterId: adapter.id, taskId: task.taskId };
-    if (reservation && idempotencyStore.commit) {
+    if (reservation) {
       await idempotencyStore.commit({ key: task.idempotencyKey, handle: result });
     }
     return result;
   } catch (error) {
-    if (reservation && idempotencyStore.fail) {
-      await idempotencyStore.fail({ key: task.idempotencyKey, reason: "submit_failed" });
+    if (reservation) {
+      let ledgerUpdateError = null;
+      try {
+        await idempotencyStore.markUnknown({ key: task.idempotencyKey, reason: "submit_or_commit_outcome_unknown" });
+      } catch (ledgerError) {
+        ledgerUpdateError = ledgerError.message;
+      }
+      throw new RuntimeBlockedError("Host submission outcome is unknown. The durable idempotency key is quarantined; reconcile with the host before resolving it. Do not retry with a new key.", {
+        adapterId: adapter.id,
+        taskId: task.taskId,
+        ledgerUpdateError,
+      });
     }
     throw error;
   }

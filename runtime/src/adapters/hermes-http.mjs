@@ -53,6 +53,12 @@ export class HermesHttpAdapter {
       const [health, capabilities] = await Promise.all([this.request("/health"), this.request("/v1/capabilities")]);
       if (!health || health.status !== "ok") return { status: "unavailable", capabilities: normalizeCapabilities() };
       const features = capabilities.features || {};
+      const runIdempotency = features.runs_idempotency;
+      const durableRunIdempotency = Boolean(
+        runIdempotency && typeof runIdempotency === "object" &&
+        runIdempotency.supported === true && runIdempotency.durable === true
+      );
+      const approvalSupported = features.run_approval_response === true && features.approval_events === true;
       return {
         status: "ready",
         observedAt: new Date().toISOString(),
@@ -61,10 +67,11 @@ export class HermesHttpAdapter {
           status: features.run_status === true ? "supported" : features.run_status === false ? "unsupported" : "unknown",
           events: features.run_events_sse === true ? "supported" : features.run_events_sse === false ? "unsupported" : "unknown",
           cancel: features.run_stop === true ? "supported" : features.run_stop === false ? "unsupported" : "unknown",
-          approval: features.run_approval === true ? "supported" : features.run_approval === false ? "unsupported" : "unknown",
-          idempotency: features.run_submission === true ? "supported" : "unknown",
-          resume: features.run_submission === true ? "supported" : "unknown",
-          permissionControls: this.permissionControlsVerified ? "supported" : "not_configured", structuredOutput: "unknown", usage: "unknown", multiAgent: "unknown",
+          approval: approvalSupported ? "supported" : features.run_approval_response === false ? "unsupported" : "unknown",
+          idempotency: durableRunIdempotency ? "supported" : runIdempotency && runIdempotency.supported === false ? "unsupported" : "unknown",
+          resume: features.run_submission === true ? "supported" : features.run_submission === false ? "unsupported" : "unknown",
+          permissionControls: this.permissionControlsVerified ? "supported" : "not_configured",
+          structuredOutput: "unknown", usage: "unknown", multiAgent: "unknown",
         }),
         evidence: { platform: capabilities.platform || "hermes-agent", health: health.status },
       };

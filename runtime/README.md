@@ -38,7 +38,7 @@ Adapter 不拥有员工权限。员工 profile 必须同时为 approved/running 
 
 RuntimeAdapterRegistry 先探测 Adapter，再根据任务所需能力筛选；不会把不可用宿主自动降级成成功。dispatchTask() 在调用宿主前检查员工生命周期、运行证据、任务审批和权限子集。所有正式任务都必须选择支持 permissionControls 的 Adapter；T3 任务还必须支持 approval。涉及写入/外部动作时必须确认宿主能实施相应权限边界。
 
-Hermes Runs API 的 Idempotency-Key 按 API profile/凭据隔离，保留 24 小时，不是跨凭据的全局 exactly-once 保证。Codex App Server 与 Claude Agent SDK 的本适配没有原生任务幂等键，必须先接入 durable=true 的持久化幂等账本，否则派单阻塞。当前没有提供生产持久账本实现，不能用内存缓存替代。任何不确定是否执行成功的写入都应先对账，不得盲目重放。
+Hermes Runs API 的 Idempotency-Key 按 API profile/凭据隔离，保留 24 小时，不是跨凭据的全局 exactly-once 保证；只有 /v1/capabilities 明确报告 runs_idempotency.supported=true 且 durable=true，才视为原生幂等。Codex App Server 与 Claude Agent SDK 没有本适配可用的原生任务幂等键，必须注入 durable=true 的 Agent OS 幂等账本，否则派单阻塞。当前提供单机文件型账本；它不是多机分布式数据库。
 
 ## 宿主安全边界
 
@@ -47,17 +47,40 @@ Hermes Runs API 的 Idempotency-Key 按 API profile/凭据隔离，保留 24 小
 - **Claude**：固定 permissionMode=default、permissionPrompts=host，并通过 canUseTool 回调处理审批；没有 permissionHandler 时回调默认拒绝，且 Runtime Core 不会选择该 Adapter。settingSources=[] 与 strictMcpConfig=true 用于隔离用户/项目设置及未声明的 MCP 连接；persistSession=false，不在本机持久化 transcript。query.close() 是关闭底层进程的强制取消，不等同于优雅中断。session resume 当前 not_configured。
 - **密钥**：Hermes API Key、Claude 凭据、Codex 登录状态均来自宿主安全配置，不写入 registry、仓库、日志或任务正文。
 
+## 持久化幂等账本
+
+FileIdempotencyStore 是 Node.js 内置模块实现的本机持久化账本，不需要 Redis、SQLite 或额外 npm 依赖。它通过 SHA-256 保存幂等键摘要与任务身份摘要，不保存原始 prompt 或原始幂等键；只保存最小运行 handle。写入使用临时文件、fsync、原子替换和独占锁，文件权限限制为 owner-only。
+
+~~~js
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { FileIdempotencyStore } from "./runtime/src/index.mjs";
+
+const idempotencyStore = new FileIdempotencyStore({
+  filePath: join(homedir(), ".agent-os", "runtime", "idempotency.json"),
+});
+~~~
+
+- 文件必须放在受保护的本机目录，不能放入公开仓库、同步网盘或客户共享目录。
+- 该实现面向单机 Runtime 控制进程；本机多个进程通过锁串行写入，但不提供跨机器分布式一致性。多机部署需另行实现带唯一约束/事务的数据库后端。
+- 锁在进程异常退出后可能保留。系统不会自动删除疑似陈旧锁；必须先确认持锁进程已退出，再由维护者手动清理，否则继续 fail closed。
+- 账本不自动清理历史记录。不得在未核对运行状态前删除 reserved/unknown 记录。
+- reserve() 返回 reserved / replay / conflict / in_progress / unknown / failed；相同 key 不同任务或请求摘要返回 conflict。
+- commit() 仅把已确认返回的 handle 写入账本；markUnknown() 将提交结果不明的任务隔离。
+- resolve() 需要 actor 与 evidenceRef；accepted 必须提供真实 host handle，not_submitted 必须有证据证明宿主没有接收任务。not_submitted 进入 failed，后续新尝试须使用新幂等键。
+- 任何 Adapter 提交或账本提交阶段发生异常，结果一律按 unknown 处理；不会自动把记录改为 failed 或盲目重试。未知状态须先向宿主对账。
+
 ## 幂等账本接口约定
 
-非原生幂等 Adapter 必须注入持久化 idempotencyStore，且声明 durable=true：
-- reserve({ key, taskId, agentId }) 返回 reserved / replay / conflict / in_progress；
-- replay 必须返回原任务 handle，不得重新 submit；
-- commit({ key, handle }) 在宿主接受任务后持久化 handle；
-- fail({ key, reason }) 记录确定的提交失败。状态不明时不能简单 fail 后重放，必须先与宿主对账。
+非原生幂等 Adapter 必须注入 durable=true 的 idempotencyStore：
+- reserve({ key, taskId, agentId, requestHash }) 返回 reserved / replay / conflict / in_progress / unknown / failed；
+- replay 必须返回原任务 handle，不得重新 submit；冲突、在途、未知或失败状态一律阻塞。
+- commit({ key, handle }) 在宿主接受任务后持久化 handle；markUnknown({ key, reason }) 隔离结果不明的提交。
+- resolve({ key, resolution, handle, evidenceRef, actor }) 只允许有证据的 accepted 或 not_submitted 对账；不允许自动重试未知任务。
 
 ## 安装与测试
 
-本目录只依赖 Node.js 内置模块；Claude SDK 作为可选宿主依赖，由集成程序注入 query 函数。
+Runtime Core、文件账本与测试只依赖 Node.js 内置模块；Claude SDK 作为可选宿主依赖，由集成程序注入 query 函数。
 
 ~~~sh
 node --test runtime/test/*.test.mjs

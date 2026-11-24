@@ -22,14 +22,17 @@ test("Hermes API capability probe and idempotent submit", async () => {
     calls.push({ path, options });
     if (path === "/health") return new Response(JSON.stringify({ status: "ok" }), { status: 200 });
     if (path === "/v1/capabilities") return new Response(JSON.stringify({
-      features: { run_submission: true, run_status: true, run_events_sse: true, run_stop: true, run_approval: true },
+      features: { run_submission: true, run_status: true, run_events_sse: true, run_stop: true, run_approval_response: true, approval_events: true, runs_idempotency: { supported: true, durable: true, retention_seconds: 86400 } },
     }), { status: 200 });
     if (path === "/v1/runs" && options.method === "POST") return new Response(JSON.stringify({ run_id: "run-1", status: "started" }), { status: 202 });
     if (path === "/v1/runs/run-1") return new Response(JSON.stringify({ run_id: "run-1", status: "completed", output: "done" }), { status: 200 });
     throw new Error("Unexpected fake Hermes request: " + path);
   };
   const adapter = new HermesHttpAdapter({ baseUrl: "http://127.0.0.1:8642", apiKey: "test-only", fetchImpl });
-  assert.equal((await adapter.probe()).capabilities.events, "supported");
+  const health = await adapter.probe();
+  assert.equal(health.capabilities.events, "supported");
+  assert.equal(health.capabilities.approval, "supported");
+  assert.equal(health.capabilities.idempotency, "supported");
   const handle = await adapter.submit(task);
   const submit = calls.find((call) => call.path === "/v1/runs" && call.options.method === "POST");
   assert.equal(submit.options.headers["Idempotency-Key"], task.idempotencyKey);
@@ -206,4 +209,20 @@ test("Runtime Core requires approval-capable host for T3", async () => {
     dispatchTask({ task: { ...task, riskTier: "T3", approval: { status: "approved" } }, agent, registry: new RuntimeAdapterRegistry([fake]) }),
     /No ready runtime adapter/,
   );
+});
+
+test("Hermes does not infer durable idempotency from run submission alone", async () => {
+  const fetchImpl = async (url) => {
+    const path = new URL(url).pathname;
+    if (path === "/health") return new Response(JSON.stringify({ status: "ok" }), { status: 200 });
+    if (path === "/v1/capabilities") return new Response(JSON.stringify({
+      features: { run_submission: true, run_status: true, run_events_sse: true, run_stop: true },
+    }), { status: 200 });
+    throw new Error("Unexpected fake Hermes request: " + path);
+  };
+  const adapter = new HermesHttpAdapter({ baseUrl: "http://127.0.0.1:8642", apiKey: "test-only", fetchImpl });
+  const health = await adapter.probe();
+  assert.equal(health.capabilities.submit, "supported");
+  assert.equal(health.capabilities.idempotency, "unknown");
+  assert.equal(health.capabilities.approval, "unknown");
 });

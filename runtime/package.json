@@ -1,9 +1,9 @@
 {
   "name": "@agent-os/runtime-adapters",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Host-neutral runtime contracts and prototype adapters for Agent OS.",
+  "description": "Host-neutral runtime contracts, multi-host adapters and a durable local idempotency ledger for Agent OS.",
   "scripts": {
     "test": "node --test test/*.test.mjs"
   }

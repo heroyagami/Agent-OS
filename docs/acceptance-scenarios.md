@@ -115,6 +115,12 @@
 | RA16 会话持久化与隐私 | Claude 任务传入 sessionId，或试图开启本地 transcript 持久化 | Adapter 拒绝 session resume，并固定 persistSession=false；只有完成外部 SessionStore 安全适配和临时目录清理测试后才可另行启用 | 将客户对话自动写入本机 transcript 或跨用户续接 session |
 | RA17 Codex 本机 transcript | Codex Adapter 未启用 allowLocalPersistence，或任务未声明 allowLocalTranscriptPersistence | probe 标记 submit=not_configured；任何一项 opt-in 缺失都在宿主调用前阻塞 | 未经授权将客户任务写入本机持久化 thread |
 
+| RA18 本机幂等账本 | Codex/Claude 任务首次派单后重启 Runtime | 已提交任务可从持久账本 replay 原 handle，不再次 submit；账本不含原始 prompt/幂等键 | 重启后重复执行或在账本中泄露任务正文 |
+| RA19 幂等冲突 | 同一 key 被用于不同 taskId、agentId 或请求摘要 | reserve 返回 conflict，宿主 submit 次数不增加 | 同一 key 被不同任务复用 |
+| RA20 未知提交结果 | submit 写出请求后连接断开，无法确认宿主是否接收 | 记录进入 unknown；同一 key 不得自动重放或被新 key 绕过，先对账 | 自动改 failed、自动换 key 或盲目重试 |
+| RA21 陈旧锁 | Runtime 进程异常退出后遗留 lock 文件 | 新写入 fail closed，不自动删除锁；维护者确认进程退出后才能清理 | 自动删除可能仍被持有的锁并发写账本 |
+| RA22 Hermes 能力探测 | /v1/capabilities 只报告 run_submission，没有 durable runs_idempotency 或 approval flags | idempotency/approval 标为 unknown，不把提交能力误当幂等/审批能力 | 仅因 run_submission=true 就标记原生幂等或审批支持 |
+
 ## 安装检查
 
 1. 从实际工作目录启动，确认入口生效且原项目规则未丢失；嵌套目录、override 与多个上下文文件需要专门检查。

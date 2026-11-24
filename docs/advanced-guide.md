@@ -4,7 +4,7 @@
 
 一套供智能体复用的任务执行与质量控制方法：用精简核心保持行动一致，按需加载专业方法，围绕实际产物验收，减少遗漏和返工。
 
-**当前版本：v0.8.4。** 在规则与工作流之外，新增宿主无关的 Runtime Core 和 Hermes、Codex App Server、Claude Agent SDK 三种 Adapter 原型。它们尚未连接真实宿主；不能把代码存在、mock 测试通过或 Adapter manifest 登记视为运行时已部署。
+**当前版本：v0.8.5。** 在规则与工作流之外，新增宿主无关的 Runtime Core 和 Hermes、Codex App Server、Claude Agent SDK 三种 Adapter 原型。它们尚未连接真实宿主；不能把代码存在、mock 测试通过或 Adapter manifest 登记视为运行时已部署。
 
 ## 从哪里开始
 
@@ -62,7 +62,7 @@ Runtime Adapter 是横切执行接入层，不是第五层业务方法，也不�
 - **Host Runtime**：实际模型、工具和 Agent loop 仍由外部宿主执行。
 - **员工注册中心**：岗位生命周期与宿主适配器生命周期分开管理；Adapter 已实现不代表员工 approved/running。
 
-实现入口：[runtime/README.md](../runtime/README.md)。三个 Adapter 当前全部为 prototype / draft / not_deployed；无默认宿主、无员工绑定、无真实运行证据。Hermes 有原生 Idempotency-Key（凭据级保留 24 小时）；Codex/Claude 需要 Agent OS 持久化幂等账本，未接入前派单必须阻塞。所有正式任务都要求宿主 permissionControls；Hermes 默认未核验，Claude 必须配置 permissionHandler。宿主权限必须由真实沙箱、工具策略和审批服务执行，不能依赖提示词声明。
+实现入口：[runtime/README.md](../runtime/README.md)。三个 Adapter 当前全部为 prototype / draft / not_deployed；无默认宿主、无员工绑定、无真实运行证据。Hermes 有原生 Idempotency-Key（凭据级保留 24 小时）；Codex/Claude 需要 Agent OS 持久化幂等账本；现已提供单机文件型实现，跨机器数据库后端仍待接入。所有正式任务都要求宿主 permissionControls；Hermes 默认未核验，Claude 必须配置 permissionHandler。宿主权限必须由真实沙箱、工具策略和审批服务执行，不能依赖提示词声明。
 
 ## 目录结构
 

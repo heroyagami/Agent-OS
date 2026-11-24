@@ -93,6 +93,14 @@ Workflow 应定义状态、依赖、超时、有限重试、幂等键、失败�
 
 本文不替代现有四层架构：Core 管通用判断，Workflow 管任务编排，Skills 管专业方法，Project 管项目约束。AI员工治理横切四层，规定谁负责、谁能做、怎样交接和如何学习。复杂任务继续使用 [Task Orchestrator](../skills/task-orchestrator/SKILL.md)；具体触发由 [Task Router](../core/task-router.md) 决定。
 
+## 员工注册中心与 AI 架构师
+
+- **设计方法**：[agent-architecture Skill](../skills/agent-architecture/SKILL.md) 负责盘点现有能力、判断组件边界、设计最小团队并生成岗位草案。
+- **工作流**：[团队设计工作流](../workflows/agent-team-design.md) 将需求、盘点、架构、审查、审批、登记和部署分成独立阶段。
+- **配置事实源**：[员工注册中心](../registry/README.md) 以 registry.json 为索引，以每个 Agent JSON profile 为岗位定义，并由 Schema 与标准库校验脚本检查。
+
+当前首个岗位是 AI 架构师，但它只是一份 **draft / not_deployed** 配置声明。Skill 是做事方法，岗位 JSON 是员工契约，Workflow 是阶段编排；三者都不是运行时。只有维护者批准、宿主完成配置并留下真实运行证据，才能改变对应状态。
+
 ## 能力边界
 
 本仓库提供规则、模板和验收标准，不自带 Agent 运行时、调度器、消息总线、语音识别、数据库、模型 API 或权限隔离。Codex、Claude Code、Hermes 及其他宿主的子 Agent、持久记忆、自动化和语音能力必须分别核验；提示词和 Markdown 不能代替真实工具权限。

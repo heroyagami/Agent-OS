@@ -1,0 +1,332 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent OS Employee Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "role_type",
+    "lifecycle_status",
+    "runtime_status",
+    "owner",
+    "mission",
+    "triggers",
+    "responsibilities",
+    "out_of_scope",
+    "inputs",
+    "outputs",
+    "skills",
+    "tools",
+    "permissions",
+    "data_policy",
+    "approval",
+    "budgets",
+    "escalation",
+    "stop_conditions",
+    "evaluation",
+    "runtime_evidence",
+    "version",
+    "last_reviewed"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "role_type": {
+      "enum": [
+        "architect",
+        "dispatcher",
+        "researcher",
+        "writer",
+        "reviewer",
+        "operator",
+        "specialist"
+      ]
+    },
+    "lifecycle_status": {
+      "enum": [
+        "draft",
+        "in_review",
+        "approved",
+        "retired"
+      ]
+    },
+    "runtime_status": {
+      "enum": [
+        "not_deployed",
+        "configured",
+        "running",
+        "suspended",
+        "unknown"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mission": {
+      "type": "string",
+      "minLength": 1
+    },
+    "triggers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "responsibilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "out_of_scope": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tools": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy",
+        "allowlist"
+      ],
+      "properties": {
+        "policy": {
+          "enum": [
+            "deny_by_default",
+            "explicit_allowlist"
+          ]
+        },
+        "allowlist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "read",
+        "write",
+        "external_actions"
+      ],
+      "properties": {
+        "read": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "write": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "external_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "data_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowed_classes",
+        "restricted_classes",
+        "external_transmission"
+      ],
+      "properties": {
+        "allowed_classes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "restricted_classes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "external_transmission": {
+          "enum": [
+            "prohibited",
+            "approval_required",
+            "allowed"
+          ]
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_for",
+        "status",
+        "approved_by",
+        "approved_at"
+      ],
+      "properties": {
+        "required_for": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "approved",
+            "rejected",
+            "not_required"
+          ]
+        },
+        "approved_by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "approved_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_cost_usd",
+        "max_tool_calls",
+        "max_retries",
+        "deadline_minutes"
+      ],
+      "properties": {
+        "max_cost_usd": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "max_tool_calls": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "max_retries": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "deadline_minutes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    "escalation": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "stop_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "success_criteria"
+      ],
+      "properties": {
+        "success_criteria": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "runtime_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "last_reviewed": {
+      "type": "string",
+      "format": "date"
+    }
+  }
+}

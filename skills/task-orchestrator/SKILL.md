@@ -21,7 +21,7 @@ description: 编排复杂任务的拆解、依赖、风险验证、阶段审查�
 - **方案竞选与分工**：重大设计存在争议或多模块具备并行条件时，读 [多方案竞选与多 Agent 分工](references/multi-agent-strategies.md)。不要让多个 Agent 无隔离共写，也不要为简单任务增加模型开销。
 - **对抗审查**：执行第 6 步时，独立模型可以帮助提出反例，但发现必须能被证据定位；模型独立不等于运行已验证，遵守 T3 审查授权与闸门。
 - **反复错误与复盘**：同类故障重复、完成复杂任务或用户要求专属工作模式时，读 [纠错、复盘与专属模式](references/learning-and-personalization.md)。原则是把有效约束放到测试和结构中，候选 Skill 经审核再共享。
-- **岗位化员工团队**：涉及长期岗位、AI设计AI、员工权限或跨Agent交接时，读 [AI员工操作模型](../../docs/agent-workforce-model.md)，按需使用角色/团队/交接模板；岗位文档不等于运行时。
+- **岗位化员工团队**：涉及长期岗位、AI设计AI、员工权限或跨Agent交接时，读 [AI员工操作模型](../../docs/agent-workforce-model.md)；需要设计/拆分岗位时再读 [agent-architecture](../agent-architecture/SKILL.md)，正式配置按 [注册中心](../../registry/README.md) 管理。岗位文档不等于运行时。
 
 ## 记录与范围
 

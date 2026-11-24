@@ -1,0 +1,22 @@
+name: Agent OS checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Check Markdown, links, Skills and adapters
+        run: python3 scripts/check_docs.py
+      - name: Check employee registry and lifecycle
+        run: python3 scripts/check_agent_registry.py

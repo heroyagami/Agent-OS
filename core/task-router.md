@@ -23,6 +23,7 @@ T3 的正式独立审查由另一位获授权的人员/审查者承担；工具�
 | Web 页面、CSS、浏览器 API、性能、无障碍与兼容性 | [modern-web-guidance](../skills/modern-web-guidance/SKILL.md) | 与 software-engineering 组合；按需检索少量指南，不加载整套知识库；纯后端和纯 Remotion 时间线任务不触发 |
 | 调研、比较、证据整合、争议结论 | [deep-research](../skills/deep-research/SKILL.md) | 医疗/法律/财务等高后果结论升 T3，基础研究 Skill 不代替专业资质 |
 | 长期/重复岗位、Agent团队设计、员工权限、跨Agent交接、语音入口 | [AI员工体系](../docs/agent-workforce-model.md) | 先区分 Agent/Skill/Workflow/Tool；无运行时或语音接口时只做设计，不声称已部署 |
+| 新建/合并员工、团队架构设计、岗位注册与配置审查 | [agent-architecture](../skills/agent-architecture/SKILL.md) + [注册中心](../registry/README.md) | 先盘点现有组件；默认生成 draft，不自行批准、授予权限或部署 |
 
 ## 进阶能力的触发
 

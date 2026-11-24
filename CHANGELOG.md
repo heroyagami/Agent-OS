@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.4.0 — 2026-11-24
+
+- 新增 agent-architecture Skill 与 AI 员工团队设计工作流，先盘点复用能力，再决定 Agent、Skill、Workflow 或 Tool。
+- 新增 JSON 员工注册中心、Agent/Registry Schema 和首个 AI 架构师岗位卡；其状态明确为 draft / not_deployed，不代表已部署。
+- 新增标准库注册校验器，检查 profile 引用、字段、唯一 ID、批准状态和运行证据。
+- 将架构师、工作流和注册中心接入 Task Router、Task Orchestrator、员工治理文档与进阶指南。
+- 新增 GitHub Actions，在 push、pull request 和手动触发时运行文档与注册检查；宿主运行时、权限隔离及真实员工执行仍需单独部署和验证。
+
+
 ## v0.3.0 — 2026-11-24
 
 - 将用户提供的七条 AI 员工原则整合为横切治理模型：岗位化、AI设计AI、少而精、身份与权限、经验沉淀、自动交接、语音/自然语言入口。

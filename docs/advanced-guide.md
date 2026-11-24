@@ -4,7 +4,7 @@
 
 一套供智能体复用的任务执行与质量控制方法：用精简核心保持行动一致，按需加载专业方法，围绕实际产物验收，减少遗漏和返工。
 
-**当前版本：v0.3.0。** 面向 Codex、Claude Code、Hermes 提供薄适配方案；尚未完成三种宿主的版本化安装与端到端验证。它是一套可读取的规则与工作流，不是新的 Agent 运行时，也不附带工具能力或权限。
+**当前版本：v0.4.0。** 面向 Codex、Claude Code、Hermes 提供薄适配方案；尚未完成三种宿主的版本化安装与端到端验证。它是一套可读取的规则与工作流，不是新的 Agent 运行时，也不附带工具能力或权限。
 
 ## 从哪里开始
 
@@ -25,8 +25,8 @@ Agent OS 将第一性原理、逆向规划、风险前置、依赖管理、最�
 | 层 | 负责的问题 | 本仓库载体 | 加载时机 |
 | --- | --- | --- | --- |
 | L1 Core | 如何判断、行动与选择流程 | `core/universal-core.md`、`core/task-router.md` | 启用进阶模式后读取 Core 与 Router |
-| L2 Workflow | 复杂工作怎样拆解、执行、审查和验收 | `skills/task-orchestrator/` 与 `templates/` | T2/T3 或确有编排需要；references 分阶段读取 |
-| L3 Skills | 领域内怎样制作与验证 | 视觉、视频、软件、研究、现代 Web 五个领域 Skill | 路由命中当前领域时 |
+| L2 Workflow | 复杂工作怎样拆解、执行、审查和验收 | `skills/task-orchestrator/`、`workflows/` 与 `templates/` | T2/T3 或确有编排需要；references 分阶段读取 |
+| L3 Skills | 领域内怎样制作与验证 | 视觉、视频、软件、研究、现代 Web Skills，以及横切的 `agent-architecture` | 路由命中当前领域或团队设计需求时 |
 | L4 Project | 当前项目有哪些真实约束 | 宿主已有规范；缺失时可用项目上下文模板 | 先读取当前范围内项目规范 |
 
 L2 用 Skill 格式承载工作流，是复用包装方式，不是新增第五层。`adapters/` 是宿主接入层，负责入口与路径，不另维护一套方法。L4 的内容属于各宿主项目，本仓库只提供可选模板，不能替代用户已有规范。
@@ -42,6 +42,9 @@ L2 用 Skill 格式承载工作流，是复用包装方式，不是新增第五�
 - 团队设计：[团队方案模板](../templates/agent-team-design.md)
 - 任务交接：[交接模板](../templates/agent-handoff.md)
 - 经验晋升：沿用 [经验提案](../templates/experience-proposal.md)，先验证再经维护者审核。
+- 架构师方法：[agent-architecture Skill](../skills/agent-architecture/SKILL.md)
+- 团队工作流：[agent-team-design](../workflows/agent-team-design.md)
+- 员工注册中心：[registry](../registry/README.md)，以 JSON Schema 和生命周期状态管理岗位。
 
 这是设计与治理规范，不会自动创建 Agent、账号、子进程、语音接口、持久记忆、工具权限或跨应用自动化。落地前必须核验宿主能力并进行隔离测试。
 
@@ -55,6 +58,7 @@ Agent-OS/
 │   ├── universal-core.md
 │   └── task-router.md
 ├── skills/
+│   ├── agent-architecture/SKILL.md
 │   ├── task-orchestrator/
 │   │   ├── SKILL.md
 │   │   └── references/
@@ -66,6 +70,15 @@ Agent-OS/
 │   ├── software-engineering/SKILL.md
 │   ├── modern-web-guidance/SKILL.md
 │   └── deep-research/SKILL.md
+├── workflows/
+│   └── agent-team-design.md
+├── registry/
+│   ├── README.md
+│   ├── registry.json
+│   ├── agents/ai-architect.json
+│   └── schema/
+│       ├── agent.schema.json
+│       └── registry.schema.json
 ├── templates/
 │   ├── task-brief.md
 │   ├── execution-plan.md
@@ -86,8 +99,11 @@ Agent-OS/
 │   ├── acceptance-scenarios.md
 │   ├── advanced-guide.md
 │   └── original-prompt.md
-└── scripts/
-    └── check_docs.py
+├── scripts/
+│   ├── check_docs.py
+│   └── check_agent_registry.py
+└── .github/workflows/
+    └── agent-os-checks.yml
 ```
 
 ## 渐进式加载（进阶模式）
@@ -168,9 +184,10 @@ Markdown 链接不是导入语法；路由器是决策规则，不是调度程�
 
 ```sh
 python scripts/check_docs.py
+python scripts/check_agent_registry.py
 ```
 
-检查必要路径、相对链接及本仓库使用的标题锚点、Skill 基础元数据、精简篇幅、代码围栏、常见 Markdown 格式和入口路径。脚本只读，不联网；不验证外链可用性，不是完整 Markdown 解析器，也不证明 Agent 会遵从规则。
+检查必要路径、相对链接及本仓库使用的标题锚点、Skill 基础元数据、精简篇幅、代码围栏、常见 Markdown 格式和入口路径。注册脚本检查 JSON 字段、引用、唯一 ID 与生命周期闸门；它不是完整 JSON Schema 验证器，也不证明 Agent 会遵从规则。
 
 运行层验证按 [验收场景](acceptance-scenarios.md) 记录具体宿主、版本、会话类型和证据。适配依据及未验证项目见 [兼容性说明](compatibility.md)。
 
@@ -181,8 +198,9 @@ python scripts/check_docs.py
 | v0.1.0 历史 | 四层底座、五个 Skills、模板、薄适配、静态检查与验收场景 | 文档结构/引用/内容审查及远端写入核验；无三端兼容保证 |
 | v0.2.3 历史 | 轻量首页与五个 Skills；新增方案竞选、分工与纠错学习参考 | 进阶方法按需阅读；真实运行效果待验证 |
 | v0.2.4 历史 | 新增 Modern Web 专业 Skill 与按需路由；原有 Core 不变 | 外部 CLI 与宿主端到端行为仍需按环境验证 |
-| v0.3.0 当前 | 在既有四层架构上增加 AI 员工治理、岗位/团队/交接模板与验收场景 | 文档与路由已整合；各宿主运行能力仍待验证 |
-| 后续计划 | 先验证日常可用性，再按需补三端接入与代表任务回归 | 有版本化证据和实际需求，避免继续堆叠流程 |
+| v0.3.0 历史 | 在既有四层架构上增加 AI 员工治理、岗位/团队/交接模板与验收场景 | 文档与路由已整合；各宿主运行能力仍待验证 |
+| v0.4.0 当前 | 新增 AI 架构师 Skill、团队设计工作流、JSON 员工注册中心和自动静态检查 | 岗位仅登记为 draft；运行时部署与宿主验证仍待完成 |
+| 后续计划 | 按实际需求验证员工注册、宿主适配和代表任务运行 | 有版本化证据和实际需求，避免继续堆叠流程 |
 | v1.0 目标 | 稳定规范、升级/回滚约定、经验证的适配范围 | 核心接口稳定且有跨任务、跨宿主的持续证据 |
 
 这些是路线目标，不是日期承诺。当前版本号代表规则内容版本，不表示已经创建 Git tag、Release 或发布安装包；变更见 [CHANGELOG](../CHANGELOG.md)。

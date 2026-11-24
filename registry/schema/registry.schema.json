@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent OS Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "registry_version",
+    "updated_at",
+    "agents",
+    "teams"
+  ],
+  "properties": {
+    "registry_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "agents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "profile",
+          "lifecycle_status",
+          "runtime_status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "profile": {
+            "type": "string",
+            "pattern": "^agents/[a-z0-9-]+\\.json$"
+          },
+          "lifecycle_status": {
+            "enum": [
+              "draft",
+              "in_review",
+              "approved",
+              "retired"
+            ]
+          },
+          "runtime_status": {
+            "enum": [
+              "not_deployed",
+              "configured",
+              "running",
+              "suspended",
+              "unknown"
+            ]
+          }
+        }
+      }
+    },
+    "teams": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "members",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "approved",
+              "retired"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

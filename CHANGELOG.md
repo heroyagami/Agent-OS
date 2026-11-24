@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.8.1 — 2026-11-24
+
+- 收紧 Runtime Core：所有正式任务都必须选择支持 permissionControls 的宿主；T3 任务还必须支持 approval。
+- Hermes 默认 permissionControls=not_configured，只有可信控制面完成 API profile 工具策略核验后才能显式启用。
+- Claude 只有配置 permissionHandler 才能被正式调度；权限模式限制为 default/plan，禁止 auto、acceptEdits 和 bypassPermissions。
+- Codex 继续默认 read-only，仅在岗位授权、任务声明写权限且指定工作目录时使用 workspace-write。
+- 补充 RA13–RA15 权限控制回归场景，防止将岗位权限声明误当成宿主安全隔离。
+
+
 ## v0.8.0 — 2026-11-24
 
 - 新增宿主无关的 Runtime Core：统一任务 Envelope、能力状态、运行事件、员工资格、权限子集和幂等闸门。

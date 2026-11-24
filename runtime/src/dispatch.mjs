@@ -41,11 +41,7 @@ export async function dispatchTask({
   assertTaskEnvelope(task);
   assertEmployeeEligible(agent, task);
   if (!registry || typeof registry.select !== "function") throw new TypeError("A RuntimeAdapterRegistry is required.");
-  const requiredCapabilities = new Set(["submit", "status", ...(task.requiredCapabilities || [])]);
-  const permissions = task.permissionsRequired || {};
-  if ((permissions.write || []).length || (permissions.externalActions || []).length || task.riskTier === "T3") {
-    requiredCapabilities.add("permissionControls");
-  }
+  const requiredCapabilities = new Set(["submit", "status", "permissionControls", ...(task.requiredCapabilities || [])]);
   if (task.riskTier === "T3") requiredCapabilities.add("approval");
   const selected = await registry.select({
     requiredCapabilities: Array.from(requiredCapabilities), preferredAdapterId,

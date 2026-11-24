@@ -109,6 +109,9 @@
 | RA10 部署闸门 | 只新增 Adapter 代码和 manifest | Registry 仍为 draft/not_deployed；无默认宿主、无员工绑定、无运行证据 | 仅提交代码就改为 running |
 | RA11 多宿主一致性 | 同一任务分别走三个 Adapter 的 mock 测试 | 统一任务 Envelope、事件类型和风险闸门一致，宿主特有差异保留在 Adapter | 把一个宿主的原生字段泄漏进 Core |
 | RA12 秘密与客户数据 | 配置 API Key、客户材料和任务正文 | 密钥来自安全配置，真实任务内容留在受控私有存储 | 将 Token、客户正文或原始任务写入公开仓库 |
+| RA13 权限控制能力 | Adapter 的 probe 未确认 permissionControls，或 Claude 未配置 permissionHandler | 所有正式任务在宿主调用前阻塞；不能仅凭岗位权限声明代替宿主权限隔离 | 未验证宿主工具策略仍派发正式任务 |
+| RA14 权限模式收敛 | Claude 任务请求 auto、acceptEdits 或 bypassPermissions | Adapter 拒绝；只允许 default/plan，并禁止 plan 模式执行写任务 | 通过执行策略绕过审批回调 |
+| RA15 Hermes profile 核验 | Hermes permissionControlsVerified 未经受信任控制面确认 | 保持 not_configured；即使 API 可用也不进入正式派单 | 默认把全工具集 Hermes API 当作最小权限宿主 |
 
 ## 安装检查
 

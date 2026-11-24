@@ -24,7 +24,8 @@ export class ClaudeAgentSdkAdapter {
       capabilities: normalizeCapabilities({
         submit: "supported", status: "supported", events: "supported", cancel: "supported",
         approval: this.permissionHandler ? "supported" : "not_configured",
-        resume: "supported", idempotency: "unsupported", permissionControls: "supported",
+        resume: "supported", idempotency: "unsupported",
+        permissionControls: this.permissionHandler ? "supported" : "not_configured",
         structuredOutput: "supported", usage: "supported", multiAgent: "unknown",
       }),
       evidence: { sdkEntryPoint: "query()", sdkImported: true },
@@ -32,6 +33,14 @@ export class ClaudeAgentSdkAdapter {
   }
 
   async submit(task) {
+    const permissionMode = (task.executionPolicy && task.executionPolicy.permissionMode) || "default";
+    if (!["default", "plan"].includes(permissionMode)) {
+      throw new Error("Claude adapter only permits default or plan permission modes; auto/bypass/acceptEdits are not enabled.");
+    }
+    const hasWritePermissions = (task.permissionsRequired && task.permissionsRequired.write || []).length > 0;
+    if (permissionMode === "plan" && hasWritePermissions) {
+      throw new Error("Claude plan permission mode cannot be used for a task that requests write permissions.");
+    }
     if (task.sessionId && (!task.executionPolicy || task.executionPolicy.claudeSessionOwnershipVerified !== true)) {
       throw new Error("Claude session resume requires a trusted control-plane check of session ownership.");
     }
@@ -43,8 +52,8 @@ export class ClaudeAgentSdkAdapter {
     };
     this.runs.set(runId, run);
     const options = {
-      permissionMode: (task.executionPolicy && task.executionPolicy.permissionMode) || "default",
-      permissionPrompts: this.permissionHandler ? "host" : "none",
+      permissionMode,
+      permissionPrompts: "host",
       persistSession: true,
       includePartialMessages: true,
       canUseTool: async (toolName, input, details) => {

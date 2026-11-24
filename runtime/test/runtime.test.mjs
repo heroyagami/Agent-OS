@@ -108,6 +108,40 @@ test("Claude SDK defaults to denying prompted tools without approval bridge", as
   assert.equal(events.at(-1).type, "run.completed");
 });
 
+test("Claude adapter rejects bypass-style permission modes", async () => {
+  let started = false;
+  const query = () => {
+    started = true;
+    return { async *[Symbol.asyncIterator]() { yield { type: "result", is_error: false, result: "done" }; }, close() {} };
+  };
+  const adapter = new ClaudeAgentSdkAdapter({ query, permissionHandler: async () => ({ behavior: "deny" }) });
+  await assert.rejects(
+    adapter.submit({ ...task, executionPolicy: { permissionMode: "bypassPermissions" } }),
+    /auto\/bypass\/acceptEdits are not enabled/,
+  );
+  assert.equal(started, false);
+});
+
+test("Runtime Core blocks every task when host permission controls are unverified", async () => {
+  const agent = {
+    id: "test-agent", lifecycle_status: "approved", runtime_status: "running",
+    runtime_evidence: ["test"], approval: { status: "approved" },
+    permissions: { read: ["workspace"], write: [], external_actions: [] },
+  };
+  const fake = {
+    id: "fake",
+    async probe() { return { status: "ready", capabilities: {
+      submit: "supported", status: "supported", idempotency: "supported",
+      permissionControls: "not_configured",
+    } }; },
+    async submit() { throw new Error("must not run"); },
+    async getStatus() {},
+    async *streamEvents() {},
+    async cancel() {},
+  };
+  await assert.rejects(dispatchTask({ task, agent, registry: new RuntimeAdapterRegistry([fake]) }), /No ready runtime adapter/);
+});
+
 test("Runtime Core blocks draft employees and non-idempotent hosts without durable ledger", async () => {
   const agent = {
     id: "test-agent", lifecycle_status: "approved", runtime_status: "running",

@@ -15,12 +15,13 @@ function mapHermesEvent(eventName, data, runId, taskId, sequence) {
 }
 
 export class HermesHttpAdapter {
-  constructor({ baseUrl, apiKey, fetchImpl = globalThis.fetch } = {}) {
+  constructor({ baseUrl, apiKey, permissionControlsVerified = false, fetchImpl = globalThis.fetch } = {}) {
     if (!baseUrl || !apiKey) throw new TypeError("Hermes adapter requires baseUrl and apiKey.");
     if (typeof fetchImpl !== "function") throw new TypeError("Hermes adapter requires fetch().");
     this.id = "hermes";
     this.baseUrl = new URL(baseUrl).toString().replace(/\/$/, "");
     this.apiKey = apiKey;
+    this.permissionControlsVerified = permissionControlsVerified === true;
     this.fetchImpl = fetchImpl;
   }
 
@@ -62,8 +63,8 @@ export class HermesHttpAdapter {
           cancel: features.run_stop === true ? "supported" : features.run_stop === false ? "unsupported" : "unknown",
           approval: features.run_approval === true ? "supported" : features.run_approval === false ? "unsupported" : "unknown",
           idempotency: features.run_submission === true ? "supported" : "unknown",
-          resume: features.session_continuity === true ? "supported" : "unknown",
-          permissionControls: "unknown", structuredOutput: "unknown", usage: "unknown", multiAgent: "unknown",
+          resume: features.run_submission === true ? "supported" : "unknown",
+          permissionControls: this.permissionControlsVerified ? "supported" : "not_configured", structuredOutput: "unknown", usage: "unknown", multiAgent: "unknown",
         }),
         evidence: { platform: capabilities.platform || "hermes-agent", health: health.status },
       };

@@ -19,7 +19,7 @@ T3 的正式独立审查由另一位获授权的人员/审查者承担；工具�
 | 跨阶段协调、复杂交付或 T2/T3 | [task-orchestrator](../skills/task-orchestrator/SKILL.md) | 只加载当前阶段需要的 reference |
 | 封面、海报、UI、信息图、品牌视觉 | [visual-design](../skills/visual-design/SKILL.md) | 多规格或多素材依赖时加编排 |
 | 脚本、分镜、剪辑、声音、字幕、导出 | [video-production](../skills/video-production/SKILL.md) | 视觉阶段再读 visual-design，勿启动即读全部 |
-| 功能、修复、架构、测试与发布 | [software-engineering](../skills/software-engineering/SKILL.md) | 先用项目原有工具链，生产变更升 T3 |
+| 功能、修复、架构、测试与发布 | [software-engineering](../skills/software-engineering/SKILL.md) | 先用项目原有工具链，生产变更升 T3 |\n| Web 页面、CSS、浏览器 API、性能、无障碍与兼容性 | [modern-web-guidance](../skills/modern-web-guidance/SKILL.md) | 与 software-engineering 组合；按需检索少量指南，不加载整套知识库；纯后端和纯 Remotion 时间线任务不触发 |
 | 调研、比较、证据整合、争议结论 | [deep-research](../skills/deep-research/SKILL.md) | 医疗/法律/财务等高后果结论升 T3，基础研究 Skill 不代替专业资质 |
 
 ## 进阶能力的触发

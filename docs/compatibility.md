@@ -1,6 +1,6 @@
 # 兼容性与核验范围
 
-文档核对日期：2026-11-08。这里的“可复用”指共享方法、Markdown 与基础 Skill 结构，不保证所有 Agent 的发现、加载、工具、权限和执行语义一致。
+文档核对日期：2026-11-24。这里的“可复用”指共享方法、Markdown 与基础 Skill 结构，不保证所有 Agent 的发现、加载、工具、权限和执行语义一致。
 
 v0.2.0 默认只复制 [通用提示词](../core/universal-core.md)，不依赖原生 Skill 发现或自动文件加载。下表说明可选文件接入与进阶模式；既有官方依据的核对日期保留，不代表本次做了新的原生运行验证。
 
@@ -24,6 +24,7 @@ v0.2.0 默认只复制 [通用提示词](../core/universal-core.md)，不依赖�
 | Claude Code Skills | [Skills](https://code.claude.com/docs/en/skills) | 按当前版本安装；云端文件可见性单独核实 |
 | Hermes 指令 | [Context Files](https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files) | 合并实际生效的项目上下文；SOUL 仅可选身份补充 |
 | Hermes Skills | [Skills System](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) | 按当前版本选择原生目录或外部目录，核对信任和写入行为 |
+| Modern Web Guidance | [GoogleChrome/modern-web-guidance](https://github.com/GoogleChrome/modern-web-guidance) | 外部 CLI 按需 search/retrieve；需检查 Node/npm 与网络条件；在线遥测可用 DISABLE_TELEMETRY=1 关闭；不代表宿主已安装或浏览器已实测 |
 
 这些来源支持适配方案设计，不构成三种宿主安装测试的证据。安装前重新打开官方文档并记录实际版本；不要从本表推导统一的指令优先级、同名处理或全平台云端行为。
 

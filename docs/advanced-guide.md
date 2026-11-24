@@ -45,7 +45,7 @@ L2 用 Skill 格式承载工作流，是复用包装方式，不是新增第五�
 - 架构师方法：[agent-architecture Skill](../skills/agent-architecture/SKILL.md)
 - 团队工作流：[agent-team-design](../workflows/agent-team-design.md)
 - 员工注册中心：[registry](../registry/README.md)，以 JSON Schema 和生命周期状态管理岗位。
-- 员工调度：[agent-dispatcher Skill](../skills/agent-dispatcher/SKILL.md) 与 [agent-dispatch 工作流](../workflows/agent-dispatch.md)。
+- 员工调度中心：[agent-dispatcher Skill](../skills/agent-dispatcher/SKILL.md) 与 [agent-dispatch 工作流](../workflows/agent-dispatch.md)。
 - 任务契约：[task.schema.json](../registry/schema/task.schema.json)；实际任务记录仅存于受控私有队列。
 
 这是设计与治理规范，不会自动创建 Agent、账号、子进程、语音接口、持久记忆、工具权限或跨应用自动化。落地前必须核验宿主能力并进行隔离测试。

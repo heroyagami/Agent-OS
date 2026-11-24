@@ -81,6 +81,15 @@ Workflow 应定义状态、依赖、超时、有限重试、幂等键、失败�
 
 任务内容、客户材料和原始文件不得写入公开仓库的注册索引。公开仓库只保存 Schema、岗位配置和流程规范；实际任务记录应存放在受访问控制的宿主队列或私有存储中。当前没有接入任务队列，因此本阶段提供派单契约与规则，不声称已经实现自动分发。
 
+## 经验学习中心与 Skill 晋升
+
+- **提炼方法**：[experience-curator Skill](../skills/experience-curator/SKILL.md) 从已验收任务、重复错误和可复现修复中提炼候选方法。
+- **晋升流程**：[experience-promotion 工作流](../workflows/experience-promotion.md) 负责脱敏、定范围、正反例测试、维护者审查、合入和回滚。
+- **提案格式**：[experience-proposal.schema.json](../registry/schema/experience-proposal.schema.json) 定义机器可校验的提案字段；[经验提案模板](../templates/experience-proposal.md) 供人工审阅。
+- **资料边界**：[经验学习中心说明](../experience/README.md) 规定来源引用、隐私脱敏和候选材料存放方式。
+
+成功对话不是直接复制为 Skill。先判断它是否形成可复用、可验证的稳定方法；再删除客户信息、原始对话、密钥和无关个人数据。优先更新项目规范或现有 Skill；只有跨项目证据充分且通用价值明确时，才考虑上升到 Core。任何共享规则修改都必须经过测试、维护者批准和可回滚提交。
+
 ## 所有员工共用的运行规则
 
 1. **任务生命周期**：收到 → 分类 → 规划 → 分派 → 执行 → 审查 → 待审批/阻塞 → 交付 → 复盘关闭。每次状态变化都要有负责人和可追踪记录。

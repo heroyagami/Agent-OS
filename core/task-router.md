@@ -25,6 +25,7 @@ T3 的正式独立审查由另一位获授权的人员/审查者承担；工具�
 | 长期/重复岗位、Agent团队设计、员工权限、跨Agent交接、语音入口 | [AI员工体系](../docs/agent-workforce-model.md) | 先区分 Agent/Skill/Workflow/Tool；无运行时或语音接口时只做设计，不声称已部署 |
 | 新建/合并员工、团队架构设计、岗位注册与配置审查 | [agent-architecture](../skills/agent-architecture/SKILL.md) + [注册中心](../registry/README.md) | 先盘点现有组件；默认生成 draft，不自行批准、授予权限或部署 |
 | 新任务分派、员工匹配、权限/预算核对、任务状态流转 | [agent-dispatcher](../skills/agent-dispatcher/SKILL.md) + [派单工作流](../workflows/agent-dispatch.md) | 只向 approved 且 runtime=running 的员工派单；无运行队列时只生成派单提案 |
+| 成功经验提炼、重复错误复盘、候选 Skill 晋升 | [experience-curator](../skills/experience-curator/SKILL.md) + [晋升工作流](../workflows/experience-promotion.md) | 先脱敏再验证；未经维护者批准不修改共享 Skill/Core |
 
 ## 进阶能力的触发
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.6.0 — 2026-11-24
+
+- 新增 experience-curator Skill 与 experience-promotion 工作流，将已验收任务转为脱敏、可测试、待审查的候选经验。
+- 新增经验提案 JSON Schema、隐私/正反例校验器和经验学习中心说明；禁止把原始对话、客户材料或密钥写入公开仓库。
+- 扩展经验提案模板，增加范围选择、正反例、隐私审查、批准记录和回滚字段。
+- 将经验学习中心接入 Task Router、Task Orchestrator、员工治理文档、进阶指南和验收场景。
+- GitHub Actions 增加经验提案检查；校验通过只代表候选结构合规，不代表提案已获批准或已合入共享 Skill/Core。
+
+
 ## v0.5.0 — 2026-11-24
 
 - 新增 agent-dispatcher Skill 与 agent-dispatch 工作流，明确任务接收、员工匹配、权限/预算闸门、状态流转和阻塞升级。

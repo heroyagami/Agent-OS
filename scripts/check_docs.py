@@ -14,7 +14,7 @@ from urllib.parse import unquote, urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = (
     "task-orchestrator", "visual-design", "video-production",
-    "software-engineering", "deep-research",
+    "software-engineering", "deep-research", "modern-web-guidance",
 )
 REQUIRED = (
     "README.md", "CHANGELOG.md", "core/universal-core.md", "core/task-router.md",

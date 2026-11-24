@@ -91,7 +91,7 @@ test("Codex App Server uses thread sandbox policy before turn/start", async () =
 
 test("Codex refuses danger-full-access and external actions", async () => {
   const adapter = new CodexAppServerAdapter({ transport: new FakeCodexTransport(), allowLocalPersistence: true });
-  await assert.rejects(adapter.submit({ ...task, executionPolicy: { sandbox: "danger-full-access" } }), /danger-full-access is not enabled/);
+  await assert.rejects(adapter.submit({ ...task, executionPolicy: { sandbox: "danger-full-access", allowLocalTranscriptPersistence: true } }), /danger-full-access is not enabled/);
   await assert.rejects(adapter.submit({
     ...task, permissionsRequired: { read: [], write: [], externalActions: ["network"] },
   }), /does not yet map externalActions/);

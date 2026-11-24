@@ -3,6 +3,7 @@
 本目录定义如何把已验收实践转化为候选规则。它不是原始聊天、客户文件或案件材料的归档区。
 
 ## 入口
+
 - [经验提炼 Skill](../skills/experience-curator/SKILL.md)：识别可复用方法、脱敏、确定适用范围。
 - [晋升工作流](../workflows/experience-promotion.md)：候选、审查、测试、批准、合入和回滚。
 - [经验提案模板](../templates/experience-proposal.md)：人工提案记录。

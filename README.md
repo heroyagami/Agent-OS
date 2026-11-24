@@ -1,12 +1,12 @@
 # Agent OS
 
-通用任务执行准则 · v0.2.3
+通用任务执行准则 · v0.2.4
 
 ## 给 Agent
 
 用户以本链接接入工作准则时，阅读下方规则，用于当前已授权任务。已有任务就继续；只有链接时，简短确认已读取，等待任务。
 
-本页已包含完整规则，读完即可使用，无需再读独立 Core、原始提示词或遍历仓库。需要专业方法时，再从页尾索引选一份；避免重复加载和复述规则。
+本页含完整规则；专业方法按需从页尾索引读取，不必预读整个仓库。
 
 ## 通用规则
 
@@ -34,6 +34,6 @@
 
 投标、询价、报价响应及成套打印文件，主动应用 [文档交付偏好](docs/document-delivery-preferences.md)，不等用户逐项提醒封面、原表、签章与排版。
 
-[视觉](skills/visual-design/SKILL.md) · [视频](skills/video-production/SKILL.md) · [软件](skills/software-engineering/SKILL.md) · [研究](skills/deep-research/SKILL.md) · [复杂任务](skills/task-orchestrator/SKILL.md)
+[视觉](skills/visual-design/SKILL.md) · [视频](skills/video-production/SKILL.md) · [软件](skills/software-engineering/SKILL.md) · [现代 Web](skills/modern-web-guidance/SKILL.md) · [研究](skills/deep-research/SKILL.md) · [复杂任务](skills/task-orchestrator/SKILL.md)
 
 文件接入与维护见 [进阶指南](docs/advanced-guide.md)。专业资料、模板和原文均保留，默认不加载。读取网页和文件依赖 Agent 实际能力，三端兼容性尚未完成实测；本规则不增加工具或权限。

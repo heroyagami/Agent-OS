@@ -4,7 +4,7 @@
 
 一套供智能体复用的任务执行与质量控制方法：用精简核心保持行动一致，按需加载专业方法，围绕实际产物验收，减少遗漏和返工。
 
-**当前版本：v0.2.3。** 面向 Codex、Claude Code、Hermes 提供薄适配方案；尚未完成三种宿主的版本化安装与端到端验证。它是一套可读取的规则与工作流，不是新的 Agent 运行时，也不附带工具能力或权限。
+**当前版本：v0.2.4。** 面向 Codex、Claude Code、Hermes 提供薄适配方案；尚未完成三种宿主的版本化安装与端到端验证。它是一套可读取的规则与工作流，不是新的 Agent 运行时，也不附带工具能力或权限。
 
 ## 从哪里开始
 
@@ -25,7 +25,7 @@ Agent OS 将第一性原理、逆向规划、风险前置、依赖管理、最�
 | --- | --- | --- | --- |
 | L1 Core | 如何判断、行动与选择流程 | `core/universal-core.md`、`core/task-router.md` | 启用进阶模式后读取 Core 与 Router |
 | L2 Workflow | 复杂工作怎样拆解、执行、审查和验收 | `skills/task-orchestrator/` 与 `templates/` | T2/T3 或确有编排需要；references 分阶段读取 |
-| L3 Skills | 领域内怎样制作与验证 | 视觉、视频、软件、研究四个 Skill | 路由命中当前领域时 |
+| L3 Skills | 领域内怎样制作与验证 | 视觉、视频、软件、研究、现代 Web 五个领域 Skill | 路由命中当前领域时 |
 | L4 Project | 当前项目有哪些真实约束 | 宿主已有规范；缺失时可用项目上下文模板 | 先读取当前范围内项目规范 |
 
 L2 用 Skill 格式承载工作流，是复用包装方式，不是新增第五层。`adapters/` 是宿主接入层，负责入口与路径，不另维护一套方法。L4 的内容属于各宿主项目，本仓库只提供可选模板，不能替代用户已有规范。
@@ -51,6 +51,7 @@ Agent-OS/
 │   ├── visual-design/SKILL.md
 │   ├── video-production/SKILL.md
 │   ├── software-engineering/SKILL.md
+│   ├── modern-web-guidance/SKILL.md
 │   └── deep-research/SKILL.md
 ├── templates/
 │   ├── task-brief.md
@@ -134,7 +135,7 @@ Markdown 链接不是导入语法；路由器是决策规则，不是调度程�
 
 单张封面通常走 T1 + [visual-design](../skills/visual-design/SKILL.md)：确认平台尺寸与文案 → 低成本布局验证 → 背景/主体/字体/色彩分层制作 → 整体整合 → 打开真实导出，检查缩略图和裁切。若变成系列封面、多尺寸、多素材协作，再升 T2。
 
-视频使用 [video-production](../skills/video-production/SKILL.md)，软件使用 [software-engineering](../skills/software-engineering/SKILL.md)，研究使用 [deep-research](../skills/deep-research/SKILL.md)。它们提供专业方法，具体生成、搜索、构建与发布依赖宿主工具和授权。
+视频使用 [video-production](../skills/video-production/SKILL.md)，软件使用 [software-engineering](../skills/software-engineering/SKILL.md)，Web 页面与浏览器平台任务按需使用 [modern-web-guidance](../skills/modern-web-guidance/SKILL.md)，研究使用 [deep-research](../skills/deep-research/SKILL.md)。它们提供专业方法，具体生成、搜索、构建与发布依赖宿主工具和授权。
 
 ## 扩展与维护
 
@@ -161,7 +162,8 @@ python scripts/check_docs.py
 | 版本 | 范围 | 发布条件 |
 | --- | --- | --- |
 | v0.1.0 历史 | 四层底座、五个 Skills、模板、薄适配、静态检查与验收场景 | 文档结构/引用/内容审查及远端写入核验；无三端兼容保证 |
-| v0.2.3 当前 | 轻量首页与五个 Skills 不变；新增方案竞选、分工与纠错学习参考 | 进阶方法按需阅读；真实运行效果待验证 |
+| v0.2.3 历史 | 轻量首页与五个 Skills；新增方案竞选、分工与纠错学习参考 | 进阶方法按需阅读；真实运行效果待验证 |
+| v0.2.4 当前 | 新增 Modern Web 专业 Skill 与按需路由；原有 Core 不变 | 外部 CLI 与宿主端到端行为仍需按环境验证 |
 | 后续计划 | 先验证日常可用性，再按需补三端接入与代表任务回归 | 有版本化证据和实际需求，避免继续堆叠流程 |
 | v1.0 目标 | 稳定规范、升级/回滚约定、经验证的适配范围 | 核心接口稳定且有跨任务、跨宿主的持续证据 |
 

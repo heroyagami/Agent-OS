@@ -26,8 +26,8 @@ Adapter 不拥有员工权限。员工 profile 必须同时为 approved/running 
 | Adapter | 官方接入面 | 本仓库实现 | 重要限制 |
 | --- | --- | --- | --- |
 | Hermes | HTTP API + SSE Runs API | 提交、状态、事件流、停止、审批、unknown-run 显式恢复；使用 Idempotency-Key | 幂等键按 API profile/凭据隔离并保留 24 小时；仅允许续接 API Server 自有 session；实际工具权限仍由服务端配置；只有在控制面核实该 profile 的工具 allowlist/denylist 与文件/网络边界后，才可显式设置 permissionControlsVerified=true；默认 not_configured，Runtime Core 会阻塞派单 |
-| Codex | App Server JSON-RPC over stdio | 初始化、thread/turn、事件、停止、续接、审批响应；内置 JSONL 子进程传输 | sandbox/approvalPolicy 在 thread/start 或 thread/resume 设置，turn/start 只提交输入；只开放 read-only/workspace-write；外部网络/Connector 权限未映射；thread/start 默认持久化本机 transcript，需 Adapter 与任务双重显式 opt-in |
-| Claude Code | TypeScript Agent SDK query() | 异步消息流、usage、关闭进程式取消、canUseTool 审批回调；session resume 暂未启用 | 不提供原生任务幂等键；必须使用持久化幂等账本；必须注入 permissionHandler 才会被 Runtime Core 选中；缺少 handler 时 permissionControls=not_configured，且需审批的工具调用默认拒绝 |
+| Codex | App Server JSON-RPC over stdio | 初始化、thread/turn、事件、停止、续接、审批响应；内置 JSONL 子进程传输 | sandbox/approvalPolicy 在 thread/start 或 thread/resume 设置，turn/start 只提交输入；只开放 read-only/workspace-write；外部网络/Connector 权限未映射；thread/start 默认持久化本机 transcript，submit 默认关闭，需 Adapter 与任务双重显式 opt-in |
+| Claude Code | TypeScript Agent SDK query() | 异步消息流、usage、关闭进程式取消、canUseTool 审批回调；session resume 暂未启用 | 不提供原生任务幂等键；必须使用持久化幂等账本；必须注入 permissionHandler 才会被 Runtime Core 选中；固定 persistSession=false，不在本机保存 transcript |
 
 官方接口依据：
 - Hermes：[Programmatic Integration](https://hermes-agent.nousresearch.com/docs/developer-guide/programmatic-integration) · [API Server](https://hermes-agent.nousresearch.com/docs/user-guide/features/api-server)
@@ -43,8 +43,8 @@ Hermes Runs API 的 Idempotency-Key 按 API profile/凭据隔离，保留 24 小
 ## 宿主安全边界
 
 - **Hermes**：Runs API 不能接管 CLI、TUI、Desktop、ACP 或消息平台拥有的 session。续接必须由可信控制面确认 session 属于 API Server。status=unknown 时先读取 admission_id 与 execution_generation，再由人工/控制面明确调用 resolveUnknown；禁止自动重放。
-- **Codex**：sandbox 与 approvalPolicy 属于 thread 配置，不是 turn/start 字段。默认 read-only；只有任务已声明写权限、岗位授权且指定 workingDirectory 时才允许 workspace-write。danger-full-access 与外部网络/Connector 权限当前不开放。
-- **Claude**：permissionPrompts=host 时由 canUseTool 回调处理审批；没有审批桥接时设置 permissionPrompts=none，拒绝需要交互批准的工具调用。query.close() 是关闭底层进程的强制取消，不等同于优雅中断。session resume 当前 not_configured；只有完成安全外部 SessionStore 适配、临时配置目录清理和会话归属校验后才会启用。
+- **Codex**：sandbox 与 approvalPolicy 属于 thread 配置，不是 turn/start 字段。默认 read-only；只有任务已声明写权限、岗位授权且指定 workingDirectory 时才允许 workspace-write。danger-full-access 与外部网络/Connector 权限当前不开放。thread/start 默认将 thread 和 transcript 持久化到本机；probe 默认 submit=not_configured，必须同时在 Adapter 构造时设置 allowLocalPersistence=true、并在单个任务设置 executionPolicy.allowLocalTranscriptPersistence=true，才可提交。启用前必须核验磁盘加密、访问控制及保留/删除策略。
+- **Claude**：固定 permissionMode=default、permissionPrompts=host，并通过 canUseTool 回调处理审批；没有 permissionHandler 时回调默认拒绝，且 Runtime Core 不会选择该 Adapter。settingSources=[] 与 strictMcpConfig=true 用于隔离用户/项目设置及未声明的 MCP 连接；persistSession=false，不在本机持久化 transcript。query.close() 是关闭底层进程的强制取消，不等同于优雅中断。session resume 当前 not_configured。
 - **密钥**：Hermes API Key、Claude 凭据、Codex 登录状态均来自宿主安全配置，不写入 registry、仓库、日志或任务正文。
 
 ## 幂等账本接口约定

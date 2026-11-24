@@ -34,7 +34,7 @@ v0.2.0 默认只复制 [通用提示词](../core/universal-core.md)，不依赖�
 | --- | --- | --- | --- |
 | Hermes | [API Server](https://hermes-agent.nousresearch.com/docs/user-guide/features/api-server) · [Programmatic Integration](https://hermes-agent.nousresearch.com/docs/developer-guide/programmatic-integration) | HTTP Runs API、SSE、stop、approval、Idempotency-Key、unknown-run 显式恢复 | mock 测试；真实服务未连接。续接只允许 API Server 自有 session；幂等键按 profile/凭据隔离并保留 24 小时；profile 权限未人工核验前不允许正式派单 |
 | Codex | [App Server protocol](https://github.com/openai/codex/tree/main/codex-rs/app-server) | JSON-RPC over stdio；thread/start、thread/resume 设置 sandbox/approvalPolicy，turn/start 提交输入 | mock 测试；真实 CLI/协议版本未验证。默认 read-only，只开放 workspace-write；本机 transcript 持久化需 Adapter/任务双重 opt-in；非原生幂等，需持久账本 |
-| Claude Code | [Agent SDK overview](https://code.claude.com/docs/en/agent-sdk/overview) · [TypeScript reference](https://code.claude.com/docs/en/agent-sdk/typescript) | query() 流式事件、session resume、usage、canUseTool 审批回调 | mock 测试；真实 SDK/CLI 未连接。必须配置 permissionHandler 才允许 Runtime Core 选择；只允许 default 权限模式；默认 persistSession=false，不本机持久化 transcript；session resume 暂未启用；非原生幂等，需持久账本 |
+| Claude Code | [Agent SDK overview](https://code.claude.com/docs/en/agent-sdk/overview) · [TypeScript reference](https://code.claude.com/docs/en/agent-sdk/typescript) | query() 流式事件、usage、canUseTool 审批回调；session resume planned | mock 测试；真实 SDK/CLI 未连接。必须配置 permissionHandler 才允许 Runtime Core 选择；只允许 default 权限模式；settingSources=[]、strictMcpConfig=true；默认 persistSession=false，不本机持久化 transcript；session resume 暂未启用；非原生幂等，需持久账本 |
 
 ### Runtime Adapter 验证边界
 

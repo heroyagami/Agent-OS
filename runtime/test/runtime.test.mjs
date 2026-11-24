@@ -103,7 +103,7 @@ test("Claude SDK defaults to denying prompted tools without approval bridge", as
   const handle = await adapter.submit(task);
   const events = [];
   for await (const event of adapter.streamEvents(handle)) events.push(event);
-  assert.equal(options.permissionPrompts, "none");
+  assert.equal(options.permissionPrompts, "host");
   assert.equal((await options.canUseTool("Bash", { command: "echo test" }, {})).behavior, "deny");
   assert.equal(events.at(-1).type, "run.completed");
 });
@@ -150,7 +150,7 @@ test("Runtime Core blocks draft employees and non-idempotent hosts without durab
   };
   const fake = {
     id: "fake",
-    async probe() { return { status: "ready", capabilities: { submit: "supported", status: "supported", events: "supported", idempotency: "unsupported" } }; },
+    async probe() { return { status: "ready", capabilities: { submit: "supported", status: "supported", events: "supported", permissionControls: "supported", idempotency: "unsupported" } }; },
     async submit() { return { runId: "run-fake" }; },
     async getStatus() {},
     async *streamEvents() {},

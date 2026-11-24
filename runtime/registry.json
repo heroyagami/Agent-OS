@@ -71,7 +71,7 @@
         "events": "implemented",
         "cancel": "force_close",
         "approval": "callback",
-        "resume": "implemented",
+        "resume": "host_dependent",
         "idempotency": "external_ledger_required",
         "permissions": "callback",
         "usage": "implemented",

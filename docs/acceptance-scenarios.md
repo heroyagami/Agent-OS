@@ -112,6 +112,7 @@
 | RA13 权限控制能力 | Adapter 的 probe 未确认 permissionControls，或 Claude 未配置 permissionHandler | 所有正式任务在宿主调用前阻塞；不能仅凭岗位权限声明代替宿主权限隔离 | 未验证宿主工具策略仍派发正式任务 |
 | RA14 权限模式收敛 | Claude 任务请求 auto、acceptEdits 或 bypassPermissions | Adapter 拒绝；只允许 default/plan，并禁止 plan 模式执行写任务 | 通过执行策略绕过审批回调 |
 | RA15 Hermes profile 核验 | Hermes permissionControlsVerified 未经受信任控制面确认 | 保持 not_configured；即使 API 可用也不进入正式派单 | 默认把全工具集 Hermes API 当作最小权限宿主 |
+| RA16 会话持久化与隐私 | Claude 任务未注入 sessionStore，或请求续接不属于当前员工的会话 | 默认 persistSession=false；无外部 sessionStore 时阻止 resume；会话归属需可信控制面确认 | 将客户对话自动写入本机 transcript 或跨用户续接 session |
 
 ## 安装检查
 

@@ -44,7 +44,7 @@ Hermes Runs API 的 Idempotency-Key 按 API profile/凭据隔离，保留 24 小
 
 - **Hermes**：Runs API 不能接管 CLI、TUI、Desktop、ACP 或消息平台拥有的 session。续接必须由可信控制面确认 session 属于 API Server。status=unknown 时先读取 admission_id 与 execution_generation，再由人工/控制面明确调用 resolveUnknown；禁止自动重放。
 - **Codex**：sandbox 与 approvalPolicy 属于 thread 配置，不是 turn/start 字段。默认 read-only；只有任务已声明写权限、岗位授权且指定 workingDirectory 时才允许 workspace-write。danger-full-access 与外部网络/Connector 权限当前不开放。
-- **Claude**：permissionPrompts=host 时由 canUseTool 回调处理审批；没有审批桥接时设置 permissionPrompts=none，拒绝需要交互批准的工具调用。query.close() 是关闭底层进程的强制取消，不等同于优雅中断。session resume 需要可信控制面确认 session 归属。
+- **Claude**：permissionPrompts=host 时由 canUseTool 回调处理审批；没有审批桥接时设置 permissionPrompts=none，拒绝需要交互批准的工具调用。query.close() 是关闭底层进程的强制取消，不等同于优雅中断。session resume 需要受控外部 sessionStore，并由可信控制面确认 session 归属。
 - **密钥**：Hermes API Key、Claude 凭据、Codex 登录状态均来自宿主安全配置，不写入 registry、仓库、日志或任务正文。
 
 ## 幂等账本接口约定
@@ -64,7 +64,7 @@ node --test runtime/test/*.test.mjs
 python3 scripts/check_runtime_registry.py
 ~~~
 
-Hermes 使用 baseUrl 与 apiKey 注入，密钥只来自宿主安全配置/环境变量，不得写入仓库。permissionControlsVerified 默认为 false，不能仅凭管理员勾选；必须先完成 profile 工具策略和隔离测试，再由受信任控制面设置。Codex 默认启动 codex app-server，可注入其他符合 JSON-RPC transport 接口的实现。Claude 通过以下方式创建 Adapter：
+Hermes 使用 baseUrl 与 apiKey 注入，密钥只来自宿主安全配置/环境变量，不得写入仓库。permissionControlsVerified 默认为 false，不能仅凭管理员勾选；必须先完成 profile 工具策略和隔离测试，再由受信任控制面设置。Codex 默认启动 codex app-server，可注入其他符合 JSON-RPC transport 接口的实现。Claude 通过以下方式创建 Adapter；如需续接会话，应额外注入 SDK SessionStore 实现，并由控制面管理 session ownership：
 
 ~~~js
 import { query } from "@anthropic-ai/claude-agent-sdk";

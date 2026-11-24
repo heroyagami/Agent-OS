@@ -9,11 +9,12 @@ function textFromContent(content) {
 }
 
 export class ClaudeAgentSdkAdapter {
-  constructor({ query, permissionHandler = null } = {}) {
+  constructor({ query, permissionHandler = null, sessionStore = null } = {}) {
     if (typeof query !== "function") throw new TypeError("Claude adapter requires query from @anthropic-ai/claude-agent-sdk.");
     this.id = "claude-agent-sdk";
     this.query = query;
     this.permissionHandler = permissionHandler;
+    this.sessionStore = sessionStore;
     this.runs = new Map();
   }
 
@@ -24,7 +25,7 @@ export class ClaudeAgentSdkAdapter {
       capabilities: normalizeCapabilities({
         submit: "supported", status: "supported", events: "supported", cancel: "supported",
         approval: this.permissionHandler ? "supported" : "not_configured",
-        resume: "supported", idempotency: "unsupported",
+        resume: this.sessionStore ? "supported" : "not_configured", idempotency: "unsupported",
         permissionControls: this.permissionHandler ? "supported" : "not_configured",
         structuredOutput: "supported", usage: "supported", multiAgent: "unknown",
       }),
@@ -34,12 +35,11 @@ export class ClaudeAgentSdkAdapter {
 
   async submit(task) {
     const permissionMode = (task.executionPolicy && task.executionPolicy.permissionMode) || "default";
-    if (!["default", "plan"].includes(permissionMode)) {
-      throw new Error("Claude adapter only permits default or plan permission modes; auto/bypass/acceptEdits are not enabled.");
+    if (permissionMode !== "default") {
+      throw new Error("Claude adapter only permits default permission mode; plan/auto/acceptEdits/bypassPermissions are not enabled.");
     }
-    const hasWritePermissions = (task.permissionsRequired && task.permissionsRequired.write || []).length > 0;
-    if (permissionMode === "plan" && hasWritePermissions) {
-      throw new Error("Claude plan permission mode cannot be used for a task that requests write permissions.");
+    if (task.sessionId && !this.sessionStore) {
+      throw new Error("Claude session resume requires an externally managed sessionStore; local transcript persistence is disabled by default.");
     }
     if (task.sessionId && (!task.executionPolicy || task.executionPolicy.claudeSessionOwnershipVerified !== true)) {
       throw new Error("Claude session resume requires a trusted control-plane check of session ownership.");
@@ -54,7 +54,9 @@ export class ClaudeAgentSdkAdapter {
     const options = {
       permissionMode,
       permissionPrompts: "host",
-      persistSession: true,
+      settingSources: [],
+      strictMcpConfig: true,
+      persistSession: Boolean(this.sessionStore),
       includePartialMessages: true,
       canUseTool: async (toolName, input, details) => {
         if (!this.permissionHandler) {
@@ -68,6 +70,7 @@ export class ClaudeAgentSdkAdapter {
       },
     };
     if (task.workingDirectory) options.cwd = task.workingDirectory;
+    if (this.sessionStore) options.sessionStore = this.sessionStore;
     if (task.sessionId) options.resume = task.sessionId;
     if (task.model) options.model = task.model;
     if (task.budget && typeof task.budget.maxCostUsd === "number") options.maxBudgetUsd = task.budget.maxCostUsd;

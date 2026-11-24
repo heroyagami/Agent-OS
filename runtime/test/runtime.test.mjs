@@ -100,12 +100,27 @@ test("Claude SDK defaults to denying prompted tools without approval bridge", as
     };
   };
   const adapter = new ClaudeAgentSdkAdapter({ query });
+  const health = await adapter.probe();
+  assert.equal(health.capabilities.permissionControls, "not_configured");
+  assert.equal(health.capabilities.resume, "not_configured");
   const handle = await adapter.submit(task);
   const events = [];
   for await (const event of adapter.streamEvents(handle)) events.push(event);
   assert.equal(options.permissionPrompts, "host");
+  assert.deepEqual(options.settingSources, []);
+  assert.equal(options.strictMcpConfig, true);
+  assert.equal(options.persistSession, false);
   assert.equal((await options.canUseTool("Bash", { command: "echo test" }, {})).behavior, "deny");
   assert.equal(events.at(-1).type, "run.completed");
+});
+
+test("Claude session resume is disabled without an external session store", async () => {
+  const query = () => ({ async *[Symbol.asyncIterator]() { yield { type: "result", is_error: false, result: "done" }; }, close() {} });
+  const adapter = new ClaudeAgentSdkAdapter({ query });
+  await assert.rejects(
+    adapter.submit({ ...task, sessionId: "session-1", executionPolicy: { claudeSessionOwnershipVerified: true } }),
+    /externally managed sessionStore/,
+  );
 });
 
 test("Claude adapter rejects bypass-style permission modes", async () => {
@@ -115,10 +130,12 @@ test("Claude adapter rejects bypass-style permission modes", async () => {
     return { async *[Symbol.asyncIterator]() { yield { type: "result", is_error: false, result: "done" }; }, close() {} };
   };
   const adapter = new ClaudeAgentSdkAdapter({ query, permissionHandler: async () => ({ behavior: "deny" }) });
-  await assert.rejects(
-    adapter.submit({ ...task, executionPolicy: { permissionMode: "bypassPermissions" } }),
-    /auto\/bypass\/acceptEdits are not enabled/,
-  );
+  for (const permissionMode of ["plan", "auto", "acceptEdits", "bypassPermissions"]) {
+    await assert.rejects(
+      adapter.submit({ ...task, executionPolicy: { permissionMode } }),
+      /only permits default permission mode/,
+    );
+  }
   assert.equal(started, false);
 });
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.8.2 — 2026-11-24
+
+- Claude Agent SDK 默认关闭本机 session transcript 持久化；只有注入受控外部 sessionStore 才允许恢复会话。
+- Claude Runtime 固定使用 default 权限模式、permissionPrompts=host、settingSources=[] 和 strictMcpConfig=true；禁止 plan/auto/acceptEdits/bypassPermissions。
+- Runtime Adapter 默认隔离用户/项目设置和未声明 MCP 连接，减少宿主本机配置对权限边界的意外影响。
+- 扩展 RA16 会话持久化与隐私回归测试；三种宿主仍未连接真实运行环境。
+
+
 ## v0.8.1 — 2026-11-24
 
 - 收紧 Runtime Core：所有正式任务都必须选择支持 permissionControls 的宿主；T3 任务还必须支持 approval。

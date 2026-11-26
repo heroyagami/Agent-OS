@@ -37,3 +37,5 @@
 [视觉](skills/visual-design/SKILL.md) · [视频](skills/video-production/SKILL.md) · [软件](skills/software-engineering/SKILL.md) · [现代 Web](skills/modern-web-guidance/SKILL.md) · [研究](skills/deep-research/SKILL.md) · [复杂任务](skills/task-orchestrator/SKILL.md) · [AI员工](docs/agent-workforce-model.md)
 
 文件接入与维护见[进阶指南](docs/advanced-guide.md)。专业资料按需加载；读取网页/文件依赖宿主能力，三端兼容性待实测。本规则不增加工具或权限。
+
+运行时开发与 P0 上下文/工具治理增量见 [Runtime Adapter](runtime/README.md)；目前仍为原型，未部署真实宿主。

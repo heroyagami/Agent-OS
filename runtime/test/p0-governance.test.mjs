@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildTaskContext, createToolGate, assertDelivery } from "../src/p0-governance.mjs";
+import { buildTaskContext, dispatchWithContext, createToolGate, assertDelivery } from "../src/p0-governance.mjs";
 
 const task = { taskId: "task-1", agentId: "employee", idempotencyKey: "key-1", prompt: "Do the work.", riskTier: "T1", requiredCapabilities: [], permissionsRequired: { read: ["file:a"], write: ["file:a"], externalActions: [] } };
 test("context loads only selected reviewed domains, deduplicates and records hashes", async () => {
@@ -47,4 +47,20 @@ test("acceptance cannot be inferred from host completion or missing evidence", (
   assert.throws(() => assertDelivery({ requiredChecks: ["test"], evidence: [] }), /not verified/);
   assert.throws(() => assertDelivery({ requiredChecks: ["test"], evidence: [{ id: "test", status: "passed" }] }), /not verified/);
   assert.deepEqual(assertDelivery({ requiredChecks: ["test"], evidence: [{ id: "test", status: "passed", reference: "trusted test report" }] }), { status: "verified", checks: ["test"] });
+});
+
+test("enriched task still passes existing dispatch capability and employee gates", async () => {
+  let submitted;
+  const agent = { id: "employee", lifecycle_status: "approved", runtime_status: "running", runtime_evidence: ["mock"], approval: { status: "approved" }, permissions: { read: ["file:a"], write: ["file:a"], external_actions: [] } };
+  const registry = { select: async ({ requiredCapabilities }) => {
+    assert.ok(requiredCapabilities.includes("permissionControls"));
+    return { adapter: { id: "mock", submit: async value => { submitted = value; return { runId: "run-1" }; } }, health: { capabilities: { idempotency: "supported" } } };
+  } };
+  const context = { revision: "r", domains: ["software"], readTrusted: async path => path };
+  const result = await dispatchWithContext({ task, agent, registry, context });
+  assert.equal(result.handle.runId, "run-1");
+  assert.match(submitted.prompt, /software-engineering/);
+  submitted = null;
+  await assert.rejects(dispatchWithContext({ task, agent: { ...agent, runtime_status: "not_deployed" }, registry, context }), /approved and running/);
+  assert.equal(submitted, null);
 });

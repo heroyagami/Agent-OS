@@ -8,3 +8,4 @@ export * from "./adapters/claude-agent-sdk.mjs";
 export * from "./transports/jsonl-process-transport.mjs";
 export * from "./idempotency/identity.mjs";
 export * from "./idempotency/file-store.mjs";
+export * from "./p0-governance.mjs";

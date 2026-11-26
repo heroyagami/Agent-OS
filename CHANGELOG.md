@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — P0 runtime governance
+
+- 复用现有 Runtime Core/Adapter 契约；新增按领域白名单、受审查版本、字节预算与内容摘要编译上下文，并经既有派单与幂等闸门提交。
+- 新增受控工具网关与验收证据闸门；默认拒绝未授权工具/资源，写入和外部动作要求可信授权及结果验证。
+- 新增 Node.js 回归测试及接入说明。Pi、DeepSeek Harness 仍为候选宿主；未连接真实宿主工具、持久审计或生产交付控制面，不改变任何部署状态。
+
 ## v0.8.5 — 2026-11-24
 
 - 新增 FileIdempotencyStore 单机持久化账本，采用任务摘要/幂等键哈希、原子写入和独占锁；POSIX 使用 0600，Windows ACL 需部署者核验。

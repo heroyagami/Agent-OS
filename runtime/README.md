@@ -103,6 +103,20 @@ const adapter = new ClaudeAgentSdkAdapter({
 });
 ~~~
 
+
+## P0 治理增量（Pi-inspired，宿主无关）
+
+- `buildTaskContext()`：由可信控制面选择领域 ID，按白名单加载 Core/Router/相关 Skill；去重，记录来源版本、SHA-256 和 UTF-8 字节数，超预算或缺文件即阻塞。不读取模型指定路径，不静默裁剪核心规则。字节预算不是模型实际 Token 或计费预算；领域选择目前由调用方负责，不是自动分类器。
+- `dispatchWithContext()`：将编译后的上下文交给既有 `dispatchTask()`，沿用员工、能力、审批、持久幂等检查。相同幂等键不得改用不同上下文版本重放。调用方必须提供固定受审查版本的可信读取器，不允许从未审查项目、任意 URL 或模型输出读取治理指令。
+- `createToolGate()`：受控工具注册、任务声明及可信授权三者交集；未知工具/未授权资源默认拒绝，写入或外部动作要求可信授权及结果核验，执行前后记录审计。仅适用于**实际通过该网关执行的工具**。可信注册工具必须自行规范化路径/资源、将执行绑定到规范化资源并防止符号链接、竞态及参数绕过。审计器、批准服务、验证器与工具实现必须由可信控制面提供，不能由模型控制。写入后核验失败不表示已回滚，按结果未知对账。
+- `assertDelivery()`：显式验收项目及可信证据引用缺一不可；宿主 completed 不等于 delivered。调用方必须独立核实证据内容及来源，不能将模型自报结果视为可信验证。
+
+以上 API 从 `src/index.mjs` 导出；测试见 `test/p0-governance.test.mjs`。原有 dispatchTask 保持兼容；新治理入口尚未接入实际宿主工具调用、持久审计和生产交付控制面。因此不能声称全部工具已强制经过网关，也不能声称已经完成真实宿主隔离。原有三个 Adapter 的部署状态不变。
+
+### Pi 与 DeepSeek Harness 接入路线
+
+两者作为候选宿主，不修改现有 runtime registry 的已部署状态。Pi 优先研究 SDK/RPC、工具事件、上下文注入与取消；DeepSeek Harness 优先研究插件注册、会话、工具权限和事件映射。均须实现既有 probe/submit/getStatus/streamEvents/cancel 契约，确认版本、真实权限隔离、审批与幂等能力，再进入 registry draft；未知能力不得伪报 supported。未完成协议适配及实测前不进入生产派单。
+
 ## 当前状态
 
 三个 Adapter 的代码均为 prototype。registry.json 中全部保持 lifecycle_status=draft、runtime_status=not_deployed，无默认宿主、无员工绑定、无运行证据。当前测试使用 mock transport/fetch/SDK stream，只证明接口映射与治理闸门，不证明已连接真实 Hermes、Codex 或 Claude 实例。

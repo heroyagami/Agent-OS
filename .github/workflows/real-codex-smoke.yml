@@ -1,0 +1,38 @@
+name: Real Codex protocol smoke
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'runtime/src/host-doctor.mjs'
+      - 'runtime/src/transports/**'
+      - 'runtime/host-doctor.mjs'
+      - '.github/workflows/real-codex-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install pinned official Codex CLI
+        run: npm install --global @openai/codex@0.172.0
+      - name: Initialize actual Codex App Server, without model invocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$(mktemp -d)"
+          export SMOKE_DIR="$work"
+          export CODEX_BINARY="$(command -v codex)"
+          mkdir -p "$work/home" "$work/workspace"
+          node --input-type=module -e 'import {writeFileSync} from "node:fs";import {join} from "node:path";const root=process.env.SMOKE_DIR;writeFileSync(join(root,"host.json"),JSON.stringify({schemaVersion:1,host:"codex-app-server",command:process.env.CODEX_BINARY,cwd:join(root,"workspace"),codexHome:join(root,"home"),expectedVersion:"0.172.0",hostBindingId:"ci-isolated"}));'
+          node runtime/host-doctor.mjs --config "$work/host.json" > "$work/report.json"
+          cat "$work/report.json"
+          node --input-type=module -e 'import assert from "node:assert/strict";import {readFileSync} from "node:fs";const r=JSON.parse(readFileSync(process.env.SMOKE_DIR+"/report.json"));assert.equal(r.check,"protocol_verified");assert.equal(r.version,"0.172.0");assert.equal(r.productionAuthorized,false);assert.equal(r.modelInvocation,false);assert.equal(r.capabilities.submit,"not_configured");assert.notEqual(r.authentication,"account_present");console.log("PASS: actual Codex process initialized, no model submission, no production grant.");'
+          rm -rf "$work"

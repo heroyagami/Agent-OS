@@ -17,15 +17,18 @@ export class JsonlProcessTransport {
   }
 
   async connect() {
-    if (this.child && !this.child.killed) return;
+    if (this.child && !this.child.killed && this.child.exitCode == null && this.child.signalCode == null) return;
     const child = this.spawnImpl(this.command, this.args, {
       cwd: this.cwd, env: this.env, stdio: ["pipe", "pipe", "pipe"],
     });
     this.child = child;
+    // Drain diagnostics without logging potentially sensitive host output.
+    child.stderr?.resume();
     this.reader = createInterface({ input: child.stdout });
     this.reader.on("line", (line) => this.handleLine(line));
     child.on("error", (error) => this.failPending(error));
     child.on("exit", (code, signal) => {
+      if (this.child === child) { this.child = null; this.reader?.close(); this.reader = null; }
       this.failPending(new Error("Codex app-server exited (" + code + ", " + signal + ")."));
       this.emit({ transportEvent: "exit", code, signal });
     });
@@ -104,6 +107,7 @@ export class JsonlProcessTransport {
   }
 
   close() {
+    this.failPending(new Error("Host transport closed."));
     if (this.reader) this.reader.close();
     if (this.child && !this.child.killed) this.child.kill();
     this.child = null;

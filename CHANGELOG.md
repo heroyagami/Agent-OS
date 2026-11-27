@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — P1 project controller
+
+- 新增真实 Git 固定版本只读加载、可运行命令行路由与上下文摘要；按项目、版本和文件显式授权。
+- 接通已批准员工、明确宿主绑定、现有派单、持久幂等账本和独立证据验收；未部署真实宿主，不修改生产任务。
+
 ## Unreleased — P0 project assets and routing
 
 - 新增授权身份与技能索引、项目路由提案、DAG 依赖和证据驱动复用规划；真实执行与权限仍由已有 Runtime 管理。

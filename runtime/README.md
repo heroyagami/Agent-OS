@@ -130,3 +130,7 @@ See [external asset context](asset-context.md) for authorized, pinned identity l
 ## Project routing and execution planning (P0 prototype)
 
 See [project routing](project-routing.md). The catalog is injected by a trusted controller; route proposals and DAG planning do not execute work.
+
+## P1 Project Controller
+
+See [project controller](project-controller.md) for the runnable read-only local CLI, pinned Git reader, explicitly authorized dispatch and evidence-based status receipts. Real host and employee deployments remain unconfigured.

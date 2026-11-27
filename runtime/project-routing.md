@@ -8,7 +8,7 @@
 
 ## 通用编排增量
 
-设计参考 [Codex Harness Vibe 架构](https://github.com/heroyagami/codex-harness-vibe/blob/main/ARCHITECTURE.md) 与 [上下文隔离契约](https://github.com/heroyagami/codex-harness-vibe/blob/main/CONTEXT-ISOLATION.md)。提炼思想，不复制 vendor 或商业授权代码。
+设计参考原 Codex Harness Vibe 的 ARCHITECTURE.md 与 CONTEXT-ISOLATION.md（历史来源提交 ba7d3072901d43dad399d262633c290578400d56）。本节保留通用方法，不依赖旧仓库的可访问性，不复制 vendor 或商业授权代码。
 
 Controller 保留全局目标；Worker 仅获得当前节点、事实白名单、验收契约、紧凑相邻摘要和授权素材。每次重试/返工使用独立上下文；禁止跨节点原始会话、客户资料和累积日志泄漏。Reviewer 检查独立产物；没有独立审查者则明确阻塞要求独立审查的任务。
 

@@ -1,0 +1,11 @@
+# P0 external asset context (prototype)
+
+Agent OS is the sole operational entry point. Keep one private identity source and one private skill archive outside this public repository. Configure their pinned commit IDs and authenticated, resource-scoped readers in the trusted host; do not put credentials, actual personal data, private repository identifiers or manifests in public configuration or CI. Source authorization must be supplied by the trusted control plane and must check per-task user authorization, purpose, destination and host data handling; a repository permission alone is insufficient.
+
+- `loadIdentity`: opt-in section IDs profile/context/workflow/communication/writing/projects/decisions; no default private read. Profile expects a merged identity source with `public/PROFILE.md` and `public/preferences/public-collaboration.md`. Preserve the root private policy. If the source is unavailable or the budget is exceeded, report the missing asset and only proceed if the task does not require it.
+- `loadSkillRegistry`: build an in-memory metadata index from the archive's three manifests. Verify expected unique count, deduplicate archive IDs, preserve aliases/host names, reject inconsistent hashes and unsafe paths. Explicitly unavailable records are counted separately; no content is loaded during indexing. Registry entries are not approved skills.
+- `loadReviewedSkill`: exact registered archive ID only, bounded read of SKILL.md, separate trusted approval of revision and SHA-256 of the document. The archive content hash describes the backup, not necessarily SKILL.md. No automatic install, execution or dependency loading; review licensing, dependencies, tools and permissions separately.
+
+These functions return reference data, not system instructions. Never let it override core governance or host controls. Do not emit private content, private manifests, or raw document hashes to public logs. Trusted readers must enforce canonical resource binding, authenticated access, immutable revisions, and safe input sizes before returning. There is no production routing, persistent sync, identity update or host deployment in this change. Integrators must explicitly wire per-task context and verified host privacy controls before using it with dispatch.
+
+Test: `node --test runtime/test/*.test.mjs`.

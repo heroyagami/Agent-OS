@@ -122,3 +122,11 @@ const adapter = new ClaudeAgentSdkAdapter({
 三个 Adapter 的代码均为 prototype。registry.json 中全部保持 lifecycle_status=draft、runtime_status=not_deployed，无默认宿主、无员工绑定、无运行证据。当前测试使用 mock transport/fetch/SDK stream，只证明接口映射与治理闸门，不证明已连接真实 Hermes、Codex 或 Claude 实例。
 
 进入 configured/running 前，必须在隔离环境完成真实版本握手、认证、最小权限、审批往返、取消、事件恢复、幂等/重试和异常退出测试；再由维护者批准 Adapter 与员工岗位。真实 API Key、客户数据和任务正文不得提交到公开仓库。
+
+## External identity and skill assets (P0 prototype)
+
+See [external asset context](asset-context.md) for authorized, pinned identity loading and metadata-only skill registry. These are opt-in helpers; no live host integration or automatic dispatch is claimed.
+
+## Project routing and execution planning (P0 prototype)
+
+See [project routing](project-routing.md). The catalog is injected by a trusted controller; route proposals and DAG planning do not execute work.

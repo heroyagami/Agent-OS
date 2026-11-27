@@ -1,12 +1,10 @@
 # Agent OS
 
-通用任务执行准则 · v0.8.5
+通用任务执行准则 · v0.8.5 + P0 候选
 
 ## 给 Agent
 
-提供本链接时，先读规则并继续当前任务。
-
-规则如下；专业方法按需加载。
+先读以下规则并继续当前任务；专业方法按需加载。
 
 ## 通用规则
 
@@ -32,10 +30,6 @@
 
 ## 按需补充
 
-投标、询价、报价响应及成套打印文件，主动应用 [文档交付偏好](docs/document-delivery-preferences.md)，不等用户逐项提醒封面、原表、签章与排版。
+[文档交付偏好](docs/document-delivery-preferences.md) · [AI员工](docs/agent-workforce-model.md) · [领域路由](core/task-router.md) · [进阶指南](docs/advanced-guide.md) · [Runtime Adapter](runtime/README.md) · [项目注册与执行](runtime/project-routing.md)
 
-[视觉](skills/visual-design/SKILL.md) · [视频](skills/video-production/SKILL.md) · [软件](skills/software-engineering/SKILL.md) · [现代 Web](skills/modern-web-guidance/SKILL.md) · [研究](skills/deep-research/SKILL.md) · [复杂任务](skills/task-orchestrator/SKILL.md) · [AI员工](docs/agent-workforce-model.md)
-
-文件接入与维护见[进阶指南](docs/advanced-guide.md)。专业资料按需加载；读取网页/文件依赖宿主能力，三端兼容性待实测。本规则不增加工具或权限。
-
-运行时开发与 P0 上下文/工具治理增量见 [Runtime Adapter](runtime/README.md)；目前仍为原型，未部署真实宿主。
+项目、身份及技能由授权宿主按需读取；运行时尚未部署，链接不授予权限。

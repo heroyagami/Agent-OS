@@ -126,3 +126,7 @@ const adapter = new ClaudeAgentSdkAdapter({
 ## External identity and skill assets (P0 prototype)
 
 See [external asset context](asset-context.md) for authorized, pinned identity loading and metadata-only skill registry. These are opt-in helpers; no live host integration or automatic dispatch is claimed.
+
+## Project routing and execution planning (P0 prototype)
+
+See [project routing](project-routing.md). The catalog is injected by a trusted controller; route proposals and DAG planning do not execute work.

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — P0 project assets and routing
+
+- 新增授权身份与技能索引、项目路由提案、DAG 依赖和证据驱动复用规划；真实执行与权限仍由已有 Runtime 管理。
+- 保持入口提示词原样，缩短 README 以符合已有 1800 字符预算。
+- 不部署宿主，不变更既有业务仓库和自动化。
+
 ## Unreleased — P0 runtime governance
 
 - 复用现有 Runtime Core/Adapter 契约；新增按领域白名单、受审查版本、字节预算与内容摘要编译上下文，并经既有派单与幂等闸门提交。

@@ -11,3 +11,5 @@ export * from "./idempotency/file-store.mjs";
 export * from "./p0-governance.mjs";
 export * from "./asset-context.mjs";
 export * from "./project-routing.mjs";
+export * from "./git-source.mjs";
+export * from "./project-controller.mjs";

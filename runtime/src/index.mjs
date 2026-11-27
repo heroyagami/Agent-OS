@@ -13,3 +13,4 @@ export * from "./asset-context.mjs";
 export * from "./project-routing.mjs";
 export * from "./git-source.mjs";
 export * from "./project-controller.mjs";
+export * from "./host-doctor.mjs";

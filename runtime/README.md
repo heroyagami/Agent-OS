@@ -134,3 +134,7 @@ See [project routing](project-routing.md). The catalog is injected by a trusted 
 ## P1 Project Controller
 
 See [project controller](project-controller.md) for the runnable read-only local CLI, pinned Git reader, explicitly authorized dispatch and evidence-based status receipts. Real host and employee deployments remain unconfigured.
+
+## P2 host readiness
+
+See [host doctor](host-doctor.md) for non-inference protocol checks and actual isolated Codex CI. Health does not imply production authorization.

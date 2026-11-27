@@ -6,6 +6,7 @@
   "description": "Host-neutral runtime contracts, multi-host adapters and a durable local idempotency ledger for Agent OS.",
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "controller": "node cli.mjs"
+    "controller": "node cli.mjs",
+    "host:doctor": "node host-doctor.mjs"
   }
 }

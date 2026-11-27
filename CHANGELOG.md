@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — P2 host readiness
+
+- 新增三宿主只读健康检查入口，Codex 固定官方版本与隔离进程协议验证，Hermes HTTP 健康检查与 Claude SDK 存在性检查；不调用模型，不授予生产权限。
+- 收紧 JSONL 进程退出清理和诊断流处理。真实认证、权限隔离、实际执行及部署仍需独立核验。
+
 ## Unreleased — P1 project controller
 
 - 新增真实 Git 固定版本只读加载、可运行命令行路由与上下文摘要；按项目、版本和文件显式授权。

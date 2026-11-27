@@ -4,6 +4,7 @@ import {execFileSync} from "node:child_process";
 import {mkdtemp,writeFile,mkdir,rm} from "node:fs/promises";
 import {tmpdir} from "node:os";
 import {join} from "node:path";
+import {fileURLToPath} from "node:url";
 import {openPinnedGitSource,planProjectContext,prepareProjectTask,submitProjectTask,inspectProjectRun,
   RuntimeAdapterRegistry,FileIdempotencyStore} from "../src/index.mjs";
 
@@ -74,11 +75,35 @@ test("dispatch exact request authorization, durable replay, cross-host conflict 
   assert.equal(receipt.runId,"r1");
   await submitProjectTask(opts);assert.equal(a.count(),1);
   await assert.rejects(submitProjectTask({...opts,hostBindingId:"profile-two"}));assert.equal(a.count(),1);
-  const inspect={idempotencyStore:store,key:task.idempotencyKey,receipt,registry,authorizeStatus:async()=>true};
+  const inspect={idempotencyStore:store,key:task.idempotencyKey,receipt,registry,hostBindingId:"profile-one",authorizeStatus:async()=>true};
   const status=await inspectProjectRun(inspect);
   assert.equal(status.hostStatus,"completed");assert.equal(status.delivery,"unverified");
   await assert.rejects(inspectProjectRun({...inspect,receipt:{...receipt,runId:"forged"}}));
+  await assert.rejects(inspectProjectRun({...inspect,hostBindingId:"profile-two"}));
   await assert.rejects(inspectProjectRun({...inspect,authorizeStatus:async()=>false}));
   const verified=await inspectProjectRun({...inspect,requiredChecks:["artifact"],verifyEvidence:async()=>[{id:"artifact",status:"passed",reference:"test fixture"}]});
   assert.equal(verified.delivery,"verified");
+});
+
+test("actual CLI routes and plans against pinned private catalog and local project fixture",async t=>{
+  const root=await mkdtemp(join(tmpdir(),"agent-os-cli-"));t.after(()=>rm(root,{recursive:true,force:true}));
+  const context=join(root,"context"),studio=join(root,"studio");
+  await mkdir(context);await mkdir(studio);await mkdir(join(context,"projects"));
+  const commit=dir=>{
+    const git=(...args)=>execFileSync("git",["-C",dir,...args],{encoding:"utf8"}).trim();
+    git("init","-q");git("config","user.email","fixture@example.invalid");git("config","user.name","Test");
+    git("add",".");git("commit","-qm","fixture");return git("rev-parse","HEAD");
+  };
+  await writeFile(join(context,"projects","project-registry.json"),JSON.stringify(catalog));
+  await writeFile(join(studio,"README.md"),"PRIVATE DOCUMENT BODY\n");
+  const contextPin=commit(context),studioPin=commit(studio);
+  const config=join(root,"private-config.json");
+  await writeFile(config,JSON.stringify({schemaVersion:1,catalog:{root:context,revision:contextPin,repository:"example/context"},
+    projects:[{id:"studio",root:studio,revision:studioPin,repository:"example/studio",reviewed:true,paths:["README.md"]}]}));
+  const cli=fileURLToPath(new URL("../cli.mjs",import.meta.url));
+  const call=action=>execFileSync(process.execPath,[cli,action,"--config",config,"--intent","motion-video"],{encoding:"utf8"});
+  assert.equal(JSON.parse(call("route")).candidates[0].id,"studio");
+  const raw=call("plan"),plan=JSON.parse(raw);
+  assert.equal(plan.revision,studioPin);assert.equal(plan.documents.length,1);
+  assert.equal(plan.execution,"not_authorized");assert.ok(!raw.includes("PRIVATE DOCUMENT BODY"));
 });

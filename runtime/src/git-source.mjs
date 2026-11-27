@@ -19,7 +19,7 @@ export async function openPinnedGitSource({ root, revision, repository, maxFileB
       !Number.isSafeInteger(maxFileBytes) || maxFileBytes < 1 || maxFileBytes > 2_000_000) deny("Invalid pinned Git source.");
   const cwd = await realpath(root);
   const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !/^GIT_/i.test(key)));
-  Object.assign(env, { GIT_TERMINAL_PROMPT:"0", GIT_NO_REPLACE_OBJECTS:"1", GIT_CONFIG_NOSYSTEM:"1" });
+  Object.assign(env, { GIT_TERMINAL_PROMPT:"0", GIT_NO_REPLACE_OBJECTS:"1", GIT_CONFIG_NOSYSTEM:"1", GIT_NO_LAZY_FETCH:"1", GIT_OPTIONAL_LOCKS:"0" });
   const git = async (args, maxBuffer = 8192) => {
     try {
       const result = await exec("git", ["--no-replace-objects", "--literal-pathspecs", "-C", cwd, ...args], {
@@ -41,6 +41,6 @@ export async function openPinnedGitSource({ root, revision, repository, maxFileB
     if (!Number.isSafeInteger(size) || size < 1 || size > maxFileBytes) deny("Pinned file exceeds byte limit.");
     const raw = await git(["cat-file","blob",match[2]],maxFileBytes+1024);
     if (raw.length !== size || raw.includes(0)) deny("Invalid text blob.");
-    try { return new TextDecoder("utf-8",{fatal:true}).decode(raw); } catch { deny("File is not UTF-8 text."); }
+    try { return new TextDecoder("utf-8",{fatal:true,ignoreBOM:true}).decode(raw); } catch { deny("File is not UTF-8 text."); }
   }});
 }

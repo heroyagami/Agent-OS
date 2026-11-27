@@ -88,9 +88,9 @@ export async function submitProjectTask({task,project,governance,adapterId,hostB
 
 // Inspect the durable record, never accept a model-supplied run handle.
 // The authorized controller owns this registry/profile mapping for the lifetime of the run.
-export async function inspectProjectRun({idempotencyStore,key,receipt,registry,authorizeStatus,verifyEvidence,requiredChecks}) {
+export async function inspectProjectRun({idempotencyStore,key,receipt,registry,hostBindingId,authorizeStatus,verifyEvidence,requiredChecks}) {
   if(idempotencyStore?.durable!==true||typeof idempotencyStore.get!=="function"||
-      !goodString(key)||!receipt||typeof authorizeStatus!=="function") deny("Trusted receipt and ledger required.");
+      !goodString(key)||!receipt||!safeId(hostBindingId)||receipt.hostBindingId!==hostBindingId||typeof authorizeStatus!=="function") deny("Trusted receipt and ledger required.");
   const record=await idempotencyStore.get({key});
   if(!record||record.requestHash!==receipt.requestHash||record.taskId!==receipt.taskId||
       record.handle?.adapterId!==receipt.adapterId||record.handle?.runId!==receipt.runId) deny("Receipt does not match the durable run record.");
